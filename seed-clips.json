@@ -1,0 +1,29 @@
+[
+    {
+        "model": "backend.Clip",
+        "pk": 1,
+        "fields": {
+            "vid_id": "dQw4w9WgXcQ",
+            "start": 43,
+            "end": 51
+        }
+    },
+    {
+        "model": "backend.Clip",
+        "pk": 2,
+        "fields": {
+            "vid_id": "y6120QOlsfU",
+            "start": 31,
+            "end": 73
+        }
+    },
+    {
+        "model": "backend.Clip",
+        "pk": 3,
+        "fields": {
+            "vid_id": "j9V78UbdzWI",
+            "start": 30,
+            "end": 63
+        }
+    }
+]

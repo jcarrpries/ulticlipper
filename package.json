@@ -1,0 +1,40 @@
+{
+  "name": "ulticlipper",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bulma": "^0.9.4",
+    "esbuild": "^0.15.9",
+    "npm-watch": "^0.11.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.4.1",
+    "sass": "^1.55.0",
+    "sass-true": "^6.1.0"
+  },
+  "watch": {
+    "build:js": {
+      "patterns": [
+        "javascript"
+      ],
+      "extensions": "jsx,js",
+      "legacyWatch": true
+    },
+    "build:styles": {
+      "patterns": [
+        "styles"
+      ],
+      "extensions": "scss",
+      "legacyWatch": true
+    }
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:js": "esbuild javascript/app.jsx --bundle --sourcemap --outfile=static/app.js",
+    "build:styles": "sass -I node_modules --update styles/stylesheet.scss:static/stylesheet.css",
+    "watch": "npm-watch"
+  }
+}
