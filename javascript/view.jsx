@@ -33,8 +33,9 @@ const View = () => {
                     src={`https://www.youtube.com/embed/${clip.vid_id}?&origin=${origin}`}
                     frameBorder="0"></iframe>
                 } */}
-
-                <YoutubePlayer initial_vid_id={clip.vid_id}/>
+                { loading ? <p>loading...</p> :
+                    <YoutubePlayer initial_vid_id={clip.vid_id}/>
+                }
             </div>
         </div>
     )

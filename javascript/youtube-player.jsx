@@ -60,7 +60,7 @@ const YoutubePlayer = (props) => {
 
     return <div>
         <YouTube
-            videoId={"dQw4w9WgXcQ"} // initial video id
+            videoId={props.initial_vid_id} // initial video id
             onReady={handleReady}
             onPlay={handlePlay}
             onPause={handlePause}
