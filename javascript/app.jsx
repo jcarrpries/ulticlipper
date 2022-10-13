@@ -7,6 +7,7 @@ import Nav from './nav'
 import Search from './search'
 import Upload from './upload'
 import View from './view'
+import TestImport from './testimport'
 
 const App = () => {
     return (
@@ -17,6 +18,7 @@ const App = () => {
                 <Route path="/search" element={<Search />} />
                 <Route path="/upload" element={<Upload />} />
                 <Route path="/clip/:clipId" element={<View />} />
+                <Route path="/testimport" element={<TestImport />} />
             </Routes>
         </BrowserRouter>
     )

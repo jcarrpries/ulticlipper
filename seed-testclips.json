@@ -1,6 +1,6 @@
 [
     {
-        "model": "backend.Clip",
+        "model": "backend.TestClip",
         "pk": 1,
         "fields": {
             "vid_id": "dQw4w9WgXcQ",
@@ -9,7 +9,7 @@
         }
     },
     {
-        "model": "backend.Clip",
+        "model": "backend.TestClip",
         "pk": 2,
         "fields": {
             "vid_id": "y6120QOlsfU",
@@ -18,7 +18,7 @@
         }
     },
     {
-        "model": "backend.Clip",
+        "model": "backend.TestClip",
         "pk": 3,
         "fields": {
             "vid_id": "j9V78UbdzWI",

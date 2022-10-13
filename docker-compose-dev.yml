@@ -24,6 +24,8 @@ services:
             DJANGO_SUPERUSER_PASSWORD: asdf
         volumes:
             - .:/app:z
+            - /app/backend/migrations
+            - ./backend/migrations/__init__.py:/app/backend/migrations/__init__.py
         restart: always
     frontend:
         image: ulticlipper-frontend-dev
