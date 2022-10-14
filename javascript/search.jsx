@@ -32,6 +32,11 @@ const Search = () => {
                             </div>
                         </form>
                     </div>
+                    { results.length > 0 &&
+                        <div className="block">
+                            <p>Results: {results.length}</p>
+                        </div>
+                    }
                 </div>
             </div>
             {
@@ -44,7 +49,10 @@ const Search = () => {
                                     <div className="card-header-title">Video ID: {clip.video.youtube_id}</div>
                                 </div>
                                 <div className="card-content">
-                                    <Link to={"/clip/"+clip.id} className="button">Link to view</Link>
+                                    <div className="block">
+                                        <Link to={"/clip/"+clip.id} className="button">Link to view</Link>
+                                    </div>
+                                    <pre><code>{JSON.stringify(clip, null, 2)}</code></pre>
                                 </div>
                             </div>
                         </div>

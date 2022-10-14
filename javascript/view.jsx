@@ -7,11 +7,7 @@ const View = () => {
     let { clipId } = useParams()
 
     const [loading, setLoading] = useState(true)
-    const [clip, setClip] = useState({
-        // "vid_id": "dQw4w9WgXcQ",
-        // "start": 43,
-        // "end": 51
-    })
+    const [clip, setClip] = useState({})
 
     useEffect(() => {
         fetch(`/api/clips/${clipId}`).then((resp) => {
@@ -34,7 +30,7 @@ const View = () => {
                     frameBorder="0"></iframe>
                 } */}
                 { loading ? <p>loading...</p> :
-                    <YoutubePlayer initial_vid_id={clip.video.youtube_id}/>
+                    <YoutubePlayer clip={clip}/>
                 }
             </div>
         </div>

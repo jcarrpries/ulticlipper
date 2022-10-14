@@ -7,16 +7,10 @@ from backend.models import Clip, Video
 from backend.serializers import ClipSerializer, VideoSerializer
 
 from backend.read_stats import get_point_clips
+from backend.sync_view import youtube_id_from_url
 
 import re
 from datetime import datetime
-
-def youtube_id_from_url(url):
-    regex = re.compile('\?v=([a-zA-Z0-9_-]{11})')
-    vid_id_matches = re.search(regex, url)
-    if vid_id_matches:
-        return vid_id_matches.group(1)
-    return ''
 
 # Create your views here.
 
