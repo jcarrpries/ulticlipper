@@ -63,7 +63,7 @@ const SyncHalves = (props) => {
                     setSecondHalfTime(cur)
                 }
             }
-        }, 100);
+        }, 100)
         return () => clearInterval(interval);
     }, [player, halfSelection])
 

@@ -24,6 +24,7 @@ const Sync = () => {
     const [selectedGame, setSelectedGame] = useState(null)
     const [halftime, setHalftime] = useState(0)
     const [clips, setClips] = useState(null)
+    const [clipIdx, setClipIdx] = useState(0)
     const [commitResult, setCommitResult] = useState(null)
 
     return (
@@ -66,6 +67,8 @@ const Sync = () => {
                         {syncStep == 'verify' &&
                             <SyncVerify 
                                 setSyncStep={setSyncStep}
+                                clipIdx={clipIdx}
+                                setClipIdx={setClipIdx}
                                 clips={clips}
                                 selectedGame={selectedGame}
                                 setCommitResult={setCommitResult}
@@ -76,8 +79,10 @@ const Sync = () => {
                         {syncStep == 'edit' &&
                             <SyncEdit 
                                 setSyncStep={setSyncStep}
+                                clipIdx={clipIdx}
                                 clips={clips}
                                 setClips={setClips}
+                                youtubeId={youtubeId}
                             />
                         }
                         {syncStep == 'done' &&

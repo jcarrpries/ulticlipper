@@ -6,6 +6,8 @@ import fmtSeconds from '../util'
 const SyncVerify = (props) => {
     const {
         setSyncStep,
+        clipIdx,
+        setClipIdx,
         clips,
         selectedGame,
         setCommitResult,
@@ -13,7 +15,6 @@ const SyncVerify = (props) => {
         url,
     } = props
 
-    const [clipIdx, setClipIdx] = useState(0)
     const [player, setPlayer] = useState(null)
     const clipSelectRef = useRef(null)
     const handleReady = (e) => {
@@ -50,6 +51,9 @@ const SyncVerify = (props) => {
             setSyncStep('done')
         })
     }
+    const handleEdit = () => {
+        setSyncStep('edit')
+    }
 
     return (
         <>
@@ -65,15 +69,15 @@ const SyncVerify = (props) => {
                         playerVars: {
                             modestBranding: 1,
                             rel: 0,
-                            start: clips[0].timestamp,
-                            end: clips[0].timestamp + clips[0].duration
+                            start: clips[clipIdx].timestamp,
+                            end: clips[clipIdx].timestamp + clips[clipIdx].duration
                         }
                     }}
                 />
             </div>
             <div className="block">
                 <div className="select">
-                    <select onChange={handleSelectChange} ref={clipSelectRef}>
+                    <select onChange={handleSelectChange} ref={clipSelectRef} value={clipIdx}>
                         {clips.map((clip, idx) => {
                             return (
                                 <option key={idx} value={idx}>Point {idx+1}</option>
@@ -93,6 +97,7 @@ const SyncVerify = (props) => {
                     <div className="button" onClick={jumpEnd}>
                         End: {fmtSeconds(clips[clipIdx].timestamp + clips[clipIdx].duration)}
                     </div>
+                    <div className="button is-warning" onClick={handleEdit}>Edit</div>
                     <div className="button is-success" onClick={handleContinue}>
                         Continue
                     </div>
