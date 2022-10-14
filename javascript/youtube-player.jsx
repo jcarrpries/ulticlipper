@@ -4,6 +4,9 @@ import YouTube from 'react-youtube';
 import React, { useState, useEffect } from 'react'
 
 const YoutubePlayer = (props) => {
+    // load default props
+    const { initial_vid_id = "dQw4w9WgXcQ", initial_time = 0 } = props
+
     const [player, setPlayer] = useState(null);
     const [timestampInput, setTimestampInput] = useState(null);
     const [vidIdInput, setVidIdInput] = useState("");
@@ -60,7 +63,7 @@ const YoutubePlayer = (props) => {
 
     return <div>
         <YouTube
-            videoId={props.initial_vid_id} // initial video id
+            videoId={initial_vid_id} // initial video id
             onReady={handleReady}
             onPlay={handlePlay}
             onPause={handlePause}
@@ -75,6 +78,7 @@ const YoutubePlayer = (props) => {
                     modestbranding: 1,
                     rel: 0, // only show related videos from same channel
                     // https://developers.google.com/youtube/player_parameters
+                    start: initial_time,
                 }
 
             }}
