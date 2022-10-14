@@ -19,5 +19,5 @@ class Tag(models.Model):
     value = models.CharField(max_length=50)
 
 class ClipTags(models.Model):
-    clip = models.ForeignKey(Clip, on_delete=models.CASCADE)
+    clip = models.ForeignKey(Clip, on_delete=models.CASCADE, related_name='cliptags')
     tag = models.ForeignKey(Tag, on_delete=models.CASCADE)

@@ -33,6 +33,9 @@ const View = () => {
                     <YoutubePlayer clip={clip}/>
                 }
             </div>
+            <div className="block">
+                <pre><code>{JSON.stringify(clip, null, 4)}</code></pre>
+            </div>
         </div>
     )
 }

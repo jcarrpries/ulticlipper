@@ -12,17 +12,18 @@ class TagSerializer(serializers.ModelSerializer):
         model = Tag
         fields = ['id', 'name', 'value']
 
-class ClipSerializer(serializers.ModelSerializer):
-    video = VideoSerializer()
-
-    class Meta:
-        model = Clip
-        fields = ['id', 'timestamp', 'duration', 'created_at', 'video']
-
 class ClipTagsSerializer(serializers.ModelSerializer):
-    clip = ClipSerializer()
+    clip = serializers.PrimaryKeyRelatedField(read_only=True)
     tag = TagSerializer()
 
     class Meta:
         model = ClipTags
         fields = ['id', 'clip', 'tag']
+
+class ClipSerializer(serializers.ModelSerializer):
+    video = VideoSerializer()
+    cliptags = ClipTagsSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Clip
+        fields = ['id', 'timestamp', 'duration', 'created_at', 'video', 'cliptags']
