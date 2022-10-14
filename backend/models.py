@@ -1,12 +1,6 @@
 from django.db import models
 
 # Create your models here.
-class TestClip(models.Model):
-    # youtube video ids are 11 characters
-    vid_id = models.CharField(max_length=11)
-    start = models.IntegerField()
-    end = models.IntegerField()
-
 class Video(models.Model):
     youtube_id = models.CharField(max_length=11)
     title = models.CharField(max_length=100)
@@ -16,6 +10,9 @@ class Clip(models.Model):
     duration = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     video = models.ForeignKey(Video, on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ['timestamp']
 
 class Tag(models.Model):
     name = models.CharField(max_length=50)

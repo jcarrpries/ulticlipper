@@ -3,8 +3,8 @@ from django.db import transaction
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from backend.models import TestClip, Clip, Video
-from backend.serializers import TestClipSerializer, ClipSerializer, VideoSerializer
+from backend.models import Clip, Video
+from backend.serializers import ClipSerializer, VideoSerializer
 
 from backend.read_stats import get_point_clips
 
@@ -56,36 +56,20 @@ class TestStatsImport(APIView):
             'clips': serializer.data,
         })
 
-class TestClipList(APIView):
+class ClipList(APIView):
     def get(self, request, format=None):
-        clips = TestClip.objects.all()
-        serializer = TestClipSerializer(clips, many=True)
+        clips = Clip.objects.all()
+        serializer = ClipSerializer(clips, many=True)
         return Response(serializer.data)
-    
-    def post(self, request, format=None):
-        if 'url' in request.data:
-            request.data['vid_id'] = youtube_id_from_url(request.data['url'])
 
-        serializer = TestClipSerializer(data=request.data)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-class TestClipDetail(APIView):
+class ClipDetail(APIView):
     def get_object(self, pk):
         try:
-            return TestClip.objects.get(pk=pk)
-        except TestClip.DoesNotExist:
+            return Clip.objects.get(pk=pk)
+        except Clip.DoesNotExist:
             raise Http404
-    
+
     def get(self, request, pk, format=None):
         clip = self.get_object(pk)
-        serializer = TestClipSerializer(clip)
+        serializer = ClipSerializer(clip)
         return Response(serializer.data)
-    
-    def delete(self, request, pk, format=None):
-        clip = self.get_object(pk)
-        clip.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)

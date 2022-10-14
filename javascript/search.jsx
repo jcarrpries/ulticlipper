@@ -41,7 +41,7 @@ const Search = () => {
                             <div className="block"></div>
                             <div className="card">
                                 <div className="card-header">
-                                    <div className="card-header-title">Video ID: {clip.vid_id}</div>
+                                    <div className="card-header-title">Video ID: {clip.video.youtube_id}</div>
                                 </div>
                                 <div className="card-content">
                                     <Link to={"/clip/"+clip.id} className="button">Link to view</Link>
