@@ -11,6 +11,8 @@ urlpatterns = [
     path('testimport/', views.TestStatsImport.as_view()),
     path('clips/', views.ClipList.as_view()),
     path('clips/<int:pk>/', views.ClipDetail.as_view()),
+    path('tags/', views.TagList.as_view()),
+    path('clipTags/', views.ClipTagList.as_view())
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

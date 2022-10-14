@@ -3,7 +3,7 @@ from django.db import transaction, IntegrityError
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from backend.models import Clip, Video
+from backend.models import Clip, Video, Tag, ClipTags
 from backend.serializers import ClipSerializer, VideoSerializer
 from backend.stats_classes import EventType
 
@@ -83,6 +83,10 @@ class SyncCommit(APIView):
                         video=new_video
                     )
                     new_clip.save()
+                    for tagName, tagValue in clip['tags'].items():
+                        tag, created = Tag.objects.update_or_create(name=tagName, value=tagValue)
+                        clipTags = ClipTags(clip=new_clip, tag=tag)
+                        clipTags.save()
         except IntegrityError:
             return Response(status.HTTP_400_BAD_REQUEST)
         

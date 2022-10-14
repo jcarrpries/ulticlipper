@@ -45,8 +45,10 @@ const SyncHalves = (props) => {
             if (clip.timestamp - secondHalfOffset > secondHalfTime) {
                 newTimestamp = clip.timestamp - secondHalfOffset
             }
-            
-            newClips.push({'timestamp': newTimestamp, 'duration': clip.duration})
+
+            clip.timestamp = newTimestamp
+
+            newClips.push(clip)
         })
         setClips(newClips)
         setSyncStep('verify')

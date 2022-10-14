@@ -3,8 +3,8 @@ from django.db import transaction
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from backend.models import Clip, Video
-from backend.serializers import ClipSerializer, VideoSerializer
+from backend.models import Clip, Video, Tag, ClipTags
+from backend.serializers import ClipSerializer, TagSerializer, VideoSerializer, ClipTagsSerializer
 
 from backend.read_stats import get_point_clips
 from backend.sync_view import youtube_id_from_url
@@ -49,6 +49,18 @@ class TestStatsImport(APIView):
             'video': vid_serializer.data,
             'clips': serializer.data,
         })
+
+class TagList(APIView):
+    def get(self, request, format=None):
+        tags = Tag.objects.all()
+        serializer = TagSerializer(tags, many=True)
+        return Response(serializer.data)
+
+class ClipTagList(APIView):
+    def get(self, request, format=None):
+        clipTags = ClipTags.objects.all()
+        serializer = ClipTagsSerializer(clipTags, many=True)
+        return Response(serializer.data)
 
 class ClipList(APIView):
     def get(self, request, format=None):
