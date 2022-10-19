@@ -16,6 +16,7 @@ class Clip(models.Model):
 
 class Tag(models.Model):
     name = models.CharField(max_length=50)
+    value = models.CharField(max_length=50)
     clips = models.ManyToManyField(Clip)
 
 class ClipTags(models.Model):
