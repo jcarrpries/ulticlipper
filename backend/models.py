@@ -17,7 +17,12 @@ class Clip(models.Model):
 class Tag(models.Model):
     name = models.CharField(max_length=50)
     value = models.CharField(max_length=50)
+    clips = models.ManyToManyField(Clip)
 
 class ClipTags(models.Model):
     clip = models.ForeignKey(Clip, on_delete=models.CASCADE, related_name='cliptags')
     tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
+
+class TagGroup(models.Model):
+    name = models.CharField(max_length=50)
+    tags = models.ManyToManyField(Tag)
