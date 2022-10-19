@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from backend.models import Clip, Video, ClipTags, Tag
+from backend.models import Clip, Video, ClipTags, Tag, TagGroup
 import requests
 
 class VideoSerializer(serializers.ModelSerializer):
@@ -23,7 +23,14 @@ class ClipTagsSerializer(serializers.ModelSerializer):
 class ClipSerializer(serializers.ModelSerializer):
     video = VideoSerializer()
     cliptags = ClipTagsSerializer(many=True, read_only=True)
-
+	
     class Meta:
         model = Clip
         fields = ['id', 'timestamp', 'duration', 'created_at', 'video', 'cliptags']
+
+class TagGroupSerializer(serializers.ModelSerializer):
+	tags = TagSerializer(many=True, read_only=True)
+
+	class Meta:
+		model = TagGroup
+		fields = ['id', 'name', 'tags']
