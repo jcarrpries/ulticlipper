@@ -1,0 +1,26 @@
+[
+	{
+		"model":"backend.tagGroup",
+		"pk": 1,
+		"fields": {
+			"name":"side",
+			"tags": []
+		}
+	},
+	{
+		"model":"backend.tagGroup",
+		"pk": 2,
+		"fields": {
+			"name":"opponent",
+			"tags": []
+		}
+	},
+	{
+		"model":"backend.tagGroup",
+		"pk": 3,
+		"fields": {
+			"name":"tournament",
+			"tags": []
+		}
+	}
+]
