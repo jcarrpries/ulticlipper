@@ -1,36 +1,26 @@
 from rest_framework import serializers
-from backend.models import Clip, Video, ClipTags, Tag, TagGroup
-import requests
+from backend.models import Clip, Video, Tag, TagGroup
 
 class VideoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Video
-        fields = ['id', 'youtube_id', 'title']
+        fields = "__all__"
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
-        fields = ['id', 'name', 'value']
-
-class ClipTagsSerializer(serializers.ModelSerializer):
-    clip = serializers.PrimaryKeyRelatedField(read_only=True)
-    tag = TagSerializer()
-
-    class Meta:
-        model = ClipTags
-        fields = ['id', 'clip', 'tag']
+        fields = "__all__"
 
 class ClipSerializer(serializers.ModelSerializer):
     video = VideoSerializer()
-    cliptags = ClipTagsSerializer(many=True, read_only=True)
 	
     class Meta:
         model = Clip
-        fields = ['id', 'timestamp', 'duration', 'created_at', 'video', 'cliptags']
+        fields = "__all__"
 
 class TagGroupSerializer(serializers.ModelSerializer):
 	tags = TagSerializer(many=True, read_only=True)
 
 	class Meta:
 		model = TagGroup
-		fields = ['id', 'name', 'tags']
+		fields = "__all__"

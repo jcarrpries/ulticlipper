@@ -3,8 +3,7 @@ from django.db import transaction, IntegrityError
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from backend.models import Clip, Video, Tag, ClipTags
-from backend.serializers import ClipSerializer, VideoSerializer
+from backend.models import Clip, Video, Tag
 from backend.stats_classes import EventType
 
 from backend.read_stats import get_team_data, get_point_clips, get_game_data, get_game_objects
@@ -84,9 +83,9 @@ class SyncCommit(APIView):
                     )
                     new_clip.save()
                     for tagName, tagValue in clip['tags'].items():
-                        tag, created = Tag.objects.update_or_create(name=tagName, value=tagValue)
-                        clipTags = ClipTags(clip=new_clip, tag=tag)
-                        clipTags.save()
+                        tag, created = Tag.objects.get_or_create(name=tagName, value=tagValue)
+                        tag.clips.add(new_clip)
+    
         except IntegrityError:
             return Response(status.HTTP_400_BAD_REQUEST)
         
