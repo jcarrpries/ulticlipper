@@ -3,6 +3,7 @@ import numpy as np
 from datetime import datetime, date, timedelta
 from backend.stats_classes import Game, Event, EventType, LineType, Player
 import string
+from backend.constants import EventStat
 
 def get_team_data(file:str) -> tuple[pd.DataFrame, list[list[str,str,str]]]:
     csv = pd.read_csv(file)
@@ -114,10 +115,10 @@ def get_point_clips(file, game_date, tournament, opponent, video_offset):
                 'timestamp': point_start_event.event_start_elapsed + video_offset,
                 'duration': event.event_start_elapsed - point_start_event.event_start_elapsed,
                 'tags': {
-                    'side': {LineType.O: 'Offense', LineType.D: 'Defense'}[event.line_type],
-                    'opponent': opponent,
-                    'tournament': tournament,
-                    'date': game_date.date(),
+                    EventStat.SIDE: {LineType.O: 'Offense', LineType.D: 'Defense'}[event.line_type],
+                    EventStat.OPPONENT: opponent,
+                    EventStat.TOURNAMENT: tournament,
+                    EventStat.DATE: game_date.date(),
                 },
             })
             update_point_start_event = True

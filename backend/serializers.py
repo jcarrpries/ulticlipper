@@ -11,6 +11,11 @@ class TagSerializer(serializers.ModelSerializer):
         model = Tag
         fields = "__all__"
 
+class BasicTagSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Tag
+		exclude = ["clips"]
+
 class ClipSerializer(serializers.ModelSerializer):
     video = VideoSerializer()
 	
@@ -19,7 +24,7 @@ class ClipSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 class TagGroupSerializer(serializers.ModelSerializer):
-	tags = TagSerializer(many=True, read_only=True)
+	tags = BasicTagSerializer(many=True, read_only=True)
 
 	class Meta:
 		model = TagGroup

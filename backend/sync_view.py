@@ -3,7 +3,7 @@ from django.db import transaction, IntegrityError
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from backend.models import Clip, Video, Tag
+from backend.models import Clip, TagGroup, Video, Tag, TagGroup
 from backend.stats_classes import EventType
 
 from backend.read_stats import get_team_data, get_point_clips, get_game_data, get_game_objects
@@ -82,8 +82,10 @@ class SyncCommit(APIView):
                         video=new_video
                     )
                     new_clip.save()
-                    for tagName, tagValue in clip['tags'].items():
-                        tag, created = Tag.objects.get_or_create(name=tagName, value=tagValue)
+                    for tagGroup, tagName in clip['tags'].items():
+                        tag_group, _ = TagGroup.objects.get_or_create(name=tagGroup)
+                        tag, created = Tag.objects.get_or_create(name=tagName)
+                        tag_group.tags.add(tag)
                         tag.clips.add(new_clip)
     
         except IntegrityError:
