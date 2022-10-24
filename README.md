@@ -9,6 +9,10 @@ Run with the following command to view the output from all containers:
 ```
 docker compose -f docker-compose-dev.yml up --build; docker compose -f docker-compose-dev.yml down --volumes
 ```
+or for Windows:
+```
+docker compose -f docker-compose-dev.yml up --build & docker compose -f docker-compose-dev.yml down --volumes
+```
 The reason the command is split in two is to ensure the resources get cleaned up at the end (mainly the Postgres container data volume). To quit, do `ctrl+C` twice. If you get an error on startup after starting multiple times, run
 ```
 docker compose -f docker-compose-dev.yml down --volumes
