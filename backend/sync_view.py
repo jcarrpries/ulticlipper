@@ -1,4 +1,5 @@
 from django.db import transaction, IntegrityError
+from django.utils.dateparse import parse_date
 
 from rest_framework import status
 from rest_framework.views import APIView
@@ -79,6 +80,7 @@ class SyncCommit(APIView):
                     new_clip = Clip(
                         timestamp=clip['timestamp'],
                         duration=clip['duration'],
+                        date=parse_date(clip['date']),
                         video=new_video
                     )
                     new_clip.save()

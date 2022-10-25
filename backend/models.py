@@ -10,6 +10,7 @@ class Clip(models.Model):
     duration = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     video = models.ForeignKey(Video, on_delete=models.CASCADE)
+    date=models.DateTimeField(null=True)
 
     class Meta:
         ordering = ['timestamp']
@@ -17,7 +18,6 @@ class Clip(models.Model):
 class Tag(models.Model):
     name = models.CharField(max_length=50)
     clips = models.ManyToManyField(Clip)
-	
     class Meta:
         indexes = [models.Index(fields=['name']), ]
 

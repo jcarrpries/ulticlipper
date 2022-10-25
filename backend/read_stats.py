@@ -114,11 +114,11 @@ def get_point_clips(file, game_date, tournament, opponent, video_offset):
             clips.append({
                 'timestamp': point_start_event.event_start_elapsed + video_offset,
                 'duration': event.event_start_elapsed - point_start_event.event_start_elapsed,
+				'date': game_date.date(),
                 'tags': {
                     EventStat.SIDE: {LineType.O: 'Offense', LineType.D: 'Defense'}[event.line_type],
                     EventStat.OPPONENT: opponent,
                     EventStat.TOURNAMENT: tournament,
-                    EventStat.DATE: game_date.date(),
                 },
             })
             update_point_start_event = True
