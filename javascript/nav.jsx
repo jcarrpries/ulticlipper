@@ -11,6 +11,7 @@ const Nav = () => {
                 <Link to="/sync" className="navbar-item">Sync</Link>
                 {/* <Link to="/testimport" className="navbar-item">TestImport</Link> */}
                 <Link to="/search" className="navbar-item">Search</Link>
+                <Link to="/tagsearch" className="navbar-item">TagSearch</Link>
             </div>
         </div>
     )

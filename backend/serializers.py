@@ -29,3 +29,10 @@ class TagGroupSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = TagGroup
 		fields = "__all__"
+
+class TagClipSerializer(serializers.ModelSerializer):
+    clips = ClipSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Tag
+        fields = "__all__"

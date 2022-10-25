@@ -7775,14 +7775,6 @@
 },
 {
     "model": "backend.taggroup",
-    "pk": 1,
-    "fields": {
-        "name": "side",
-        "tags": []
-    }
-},
-{
-    "model": "backend.taggroup",
     "pk": 2,
     "fields": {
         "name": "opponent",

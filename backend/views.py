@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from backend.models import Clip, Video, Tag, TagGroup
-from backend.serializers import ClipSerializer, TagSerializer, VideoSerializer, TagGroupSerializer
+from backend.serializers import ClipSerializer, TagClipSerializer, TagSerializer, VideoSerializer, TagGroupSerializer
 
 from backend.read_stats import get_point_clips
 from backend.sync_view import youtube_id_from_url
@@ -78,4 +78,28 @@ class ClipDetail(APIView):
     def get(self, request, pk, format=None):
         clip = self.get_object(pk)
         serializer = ClipSerializer(clip)
+        return Response(serializer.data)
+
+class TagGroupDetail(APIView):
+    def get_object(self, pk):
+        try:
+            return TagGroup.objects.get(pk=pk)
+        except TagGroup.DoesNotExist:
+            raise Http404
+    
+    def get(self, request, pk, format=None):
+        group = self.get_object(pk)
+        serializer = TagGroupSerializer(group)
+        return Response(serializer.data)
+
+class TagDetail(APIView):
+    def get_object(self, pk):
+        try:
+            return Tag.objects.get(pk=pk)
+        except Tag.DoesNotExist:
+            raise Http404
+    
+    def get(self, request, pk, format=None):
+        tag = self.get_object(pk)
+        serializer = TagClipSerializer(tag)
         return Response(serializer.data)
