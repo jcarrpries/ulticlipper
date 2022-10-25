@@ -9,6 +9,7 @@ const SyncVerify = (props) => {
         clipIdx,
         setClipIdx,
         clips,
+        events,
         selectedGame,
         setCommitResult,
         youtubeId,
@@ -34,9 +35,29 @@ const SyncVerify = (props) => {
         clipSelectRef.current.selectedIndex++
         handleSelectChange({target: clipSelectRef.current})
     }
-    const handleContinue = () => {
+    const handleSubmit = () => {
+        // Modify events to fit final set of clips
+        let point = 0
+        let newEvents = []
+        let offset = clips[point].timestamp - events[0].event_start_elapsed
+        for (let i = 0; i < events.length; i++) {
+            events[i].event_start_elapsed += offset
+            newEvents.push(events[i])
+            // if the event type is goal, increment point and set offset
+            if (events[i].event_type == 'GOAL') {
+                // console.log('event time:', events[i].event_start_elapsed)
+                // console.log('clip time:', clips[point].timestamp + clips[point].duration)
+                // only update offset if we're not on the last event
+                point++
+                if (point < clips.length) {
+                    offset = clips[point].timestamp - events[i+1].event_start_elapsed
+                }
+            }
+        }
+
         let data = new FormData()
         data.append('clips', JSON.stringify(clips))
+        data.append('events', JSON.stringify(events))
         data.append('url', url)
         data.append('game_date', selectedGame.game_date)
         data.append('tournament', selectedGame.tournament)
@@ -98,8 +119,8 @@ const SyncVerify = (props) => {
                         End: {fmtSeconds(clips[clipIdx].timestamp + clips[clipIdx].duration)}
                     </div>
                     <div className="button is-warning" onClick={handleEdit}>Edit</div>
-                    <div className="button is-success" onClick={handleContinue}>
-                        Continue
+                    <div className="button is-success" onClick={handleSubmit}>
+                        Submit
                     </div>
                 </div>
             </div>

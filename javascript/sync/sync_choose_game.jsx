@@ -9,6 +9,7 @@ const SyncChooseGame = (props) => {
         games,
         csvFile,
         setClips,
+        setEvents,
         setHalftime,
     } = props
 
@@ -28,6 +29,7 @@ const SyncChooseGame = (props) => {
             return resp.json()
         }).then((json) => {
             setClips(json.clips)
+            setEvents(json.events)
             setHalftime(json.halftime)
             setYoutubeId(json.youtube_id)
             setSyncStep('halves')

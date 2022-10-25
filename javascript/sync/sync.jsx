@@ -24,6 +24,7 @@ const Sync = () => {
     const [selectedGame, setSelectedGame] = useState(null)
     const [halftime, setHalftime] = useState(0)
     const [clips, setClips] = useState(null)
+    const [events, setEvents] = useState(null)
     const [clipIdx, setClipIdx] = useState(0)
     const [commitResult, setCommitResult] = useState(null)
 
@@ -52,6 +53,7 @@ const Sync = () => {
                                 games={games}
                                 csvFile={csvFile}
                                 setClips={setClips}
+                                setEvents={setEvents}
                                 setHalftime={setHalftime}
                             />
                         }
@@ -70,6 +72,7 @@ const Sync = () => {
                                 clipIdx={clipIdx}
                                 setClipIdx={setClipIdx}
                                 clips={clips}
+                                events={events}
                                 selectedGame={selectedGame}
                                 setCommitResult={setCommitResult}
                                 youtubeId={youtubeId}
@@ -86,7 +89,7 @@ const Sync = () => {
                             />
                         }
                         {syncStep == 'done' &&
-                            <SyncDone 
+                            <SyncDone
                                 commitResult={commitResult}
                             />
                         }

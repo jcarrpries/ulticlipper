@@ -59,6 +59,7 @@ class SyncChooseGame(APIView):
             'youtube_id': youtube_id,
             'halftime': halftime,
             'clips': clips,
+            'events': [event.serialize() for event in game_object.events]
         })
 
 class SyncCommit(APIView):
@@ -66,6 +67,7 @@ class SyncCommit(APIView):
     # return all good
     def post(self, request, format=None):
         new_clips = json.loads(request.data['clips'])
+        new_events = json.loads(request.data['events'])
         url = request.data['url']
         game_date = datetime.fromisoformat(request.data['game_date'])
         tournament = request.data['tournament']
@@ -76,19 +78,27 @@ class SyncCommit(APIView):
         try:
             with transaction.atomic():
                 new_video.save()
-                for clip in new_clips:
-                    new_clip = Clip(
-                        timestamp=clip['timestamp'],
-                        duration=clip['duration'],
-                        date=parse_date(clip['date']),
+                for event in new_events:
+                    new_event = Clip(
+                        timestamp=event['event_start_elapsed'],
+                        date=parse_date(event['datetime_game']),
+                        duration=0,
                         video=new_video
                     )
-                    new_clip.save()
-                    for tagGroup, tagName in clip['tags'].items():
-                        tag_group, _ = TagGroup.objects.get_or_create(name=tagGroup)
-                        tag, created = Tag.objects.get_or_create(name=tagName)
-                        tag_group.tags.add(tag)
-                        tag.clips.add(new_clip)
+                    new_event.save()
+                    for group, name in event.items():
+                        ignore_fields = ['datetime_game', 'event_start_elapsed']
+                        if group not in ignore_fields and name is not None and name != 'Anonymous':
+                            tag_group, _ = TagGroup.objects.get_or_create(name=group)
+                            if group == 'players_on':
+                                for player_name in name:
+                                    tag, _ = Tag.objects.get_or_create(name=player_name)
+                                    tag_group.tags.add(tag)
+                                    tag.clips.add(new_event)
+                            else:
+                                tag, _ = Tag.objects.get_or_create(name=name)
+                                tag_group.tags.add(tag)
+                                tag.clips.add(new_event)
     
         except IntegrityError:
             return Response(status.HTTP_400_BAD_REQUEST)

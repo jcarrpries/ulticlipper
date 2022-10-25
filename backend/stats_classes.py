@@ -117,6 +117,14 @@ class Event:
     def __str__(self) -> str:
         return f"{self.event_type}: {self.passer} {self.reciever} {self.defender}"
 
+    def serialize(self):
+        ret = vars(self)
+        ret['players_on'] = [player.nickname for player in self.players_on]
+        ret['event_type'] = str(self.event_type.name)
+        ret['line_type'] = str(self.line_type.name)
+        del ret['event_start_datetime']
+        return ret
+
 
 class Game:
     def __init__(
