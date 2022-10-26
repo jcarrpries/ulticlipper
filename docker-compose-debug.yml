@@ -1,0 +1,52 @@
+version: '3.9'
+
+services:
+    proxy:
+        depends_on:
+        - backend
+        image: caddy:2.6.1
+        container_name: ulticlipper-proxy-dev
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - ./static:/static
+            - ./Caddyfile-dev:/etc/caddy/Caddyfile
+            - caddy_data:/data
+    backend:
+        depends_on:
+            - database
+        image: ulticlipper-backend-dev
+        build:
+            dockerfile: Dockerfile-dev-django
+        container_name: ulticlipper-backend-dev
+        command: ["sh", "-c", "pip install debugpy -t /tmp && python /tmp/debugpy --wait-for-client --listen 0.0.0.0:5678 manage.py runserver 0.0.0.0:8000 --nothreading --noreload"]
+        ports:
+          - 8000:8000
+          - 5678:5678
+        environment:
+            DJANGO_SUPERUSER_PASSWORD: asdf
+        volumes:
+            - .:/app:z
+        restart: always
+    frontend:
+        image: ulticlipper-frontend-dev
+        build:
+            dockerfile: Dockerfile-dev-node
+        volumes:
+            - ./javascript:/app/javascript:z
+            - ./styles:/app/styles:z
+            - ./static:/app/static
+        restart: always
+    database:
+        image: postgres:14.5
+        container_name: ulticlipper-database-dev
+        environment:
+          POSTGRES_USER: backend
+          POSTGRES_PASSWORD: good_password
+        restart: always
+
+volumes:
+    caddy_data:
+        external: false
+        

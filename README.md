@@ -21,6 +21,18 @@ This should ensure all old resources are cleaned up so things can start fresh.
 
 Visit http://localhost to view the site once all the containers are running.
 
+##Debugging (Django )
+Copy `launch_vscode_degugger.json` into `/.vscode` and rename file to `launch.json`
+
+Install the Docker extension in VS Code so that you can run docker compose up
+Right click on `docker-compose-debug.yml` and select Compose Up
+
+Navigate to the Run and Debug tab in VS Code 
+Select `Django Debug` from the RUN AND DEBUG configuration options
+If it doesn't work on the first try wait a few seconds and try again
+
+Set desired break points and away you go!
+
 ## Structure
 The project is split into a frontend, backend, database, and proxy.
 ### Deployment
