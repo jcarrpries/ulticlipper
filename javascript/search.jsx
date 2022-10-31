@@ -1,17 +1,52 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
+
 const Search = () => {
-    let [results, setResults] = useState([])
+    let [clips, setClips] = useState([])
+    let [tagGroups, setTagGroups] = useState([])
+    let [tags, setTags] = useState([])
 
     const searchRequest = (e) => {
-        fetch('/api/clips').then((resp) => {
+        let query = ""
+
+        for (option of e.target) {
+            if (option.selectedOptions) {
+                let id = option.id
+                let sub_query = ""
+                for (selectedOption of option.selectedOptions) {
+                    sub_query += selectedOption.value + ","
+                }
+                if (sub_query.length > 0) {
+                    sub_query = sub_query.substring(0, sub_query.length - 1)
+                    query += id + "=[" + sub_query + "]&"
+                }
+            }
+        }
+
+        if (query[query.length - 1] == "&") {
+            query = query.substring(0, query.length - 1)
+        }
+
+        console.log(query)
+
+        fetch('/api/clips/?' + query).then((resp) => {
             return resp.json()
         }).then((json) => {
-            setResults(json)
+            setClips(json)
         })
         e.preventDefault()
     }
+
+    // use useEffect to run this code once when the component loads
+    useEffect(() => {
+        fetch('/api/tag_groups').then((resp) => {
+            return resp.json()
+        }).then((json) => {
+            console.log('tag groups:', json)
+            setTagGroups(json)
+        })
+    }, [])
 
     return (
         <section className="section">
@@ -22,25 +57,36 @@ const Search = () => {
                 <div className="card-content">
                     <div className="container">
                         <form onSubmit={searchRequest}>
-                            <div className="field has-addons">
-                                <div className="control is-expanded">
-                                    <input type="text" className="input"></input>
-                                </div>
-                                <div className="control">
-                                    <button className="button is-primary" type="submit">Go</button>
-                                </div>
+                            {tagGroups.map((group, idx) => {
+                                return (
+                                    <span>
+                                        <label for={group.name}>{group.name}</label>
+                                        <select id={group.name} name={group.name} multiple>
+                                            {group.tags.map((tag, idx) => {
+                                                return (
+                                                    <option key={idx} value={tag.id}>{tag.name}</option>
+                                                )
+                                            })}
+                                        </select>
+                                    </span>
+                                )
+                            })}
+                            <div className="control">
+                                <button className="button is-primary" type="submit">Search</button>
                             </div>
                         </form>
                     </div>
-                    { results.length > 0 &&
-                        <div className="block">
-                            <p>Results: {results.length}</p>
-                        </div>
-                    }
+                    <div>
+
+
+                    </div>
                 </div>
             </div>
+            <div className="block">
+                <p>Results: {clips.length}</p>
+            </div>
             {
-                results.map((clip) => {
+                clips.map((clip) => {
                     return (
                         <div key={clip.id}>
                             <div className="block"></div>
@@ -50,7 +96,7 @@ const Search = () => {
                                 </div>
                                 <div className="card-content">
                                     <div className="block">
-                                        <Link to={"/clip/"+clip.id} className="button">Link to view</Link>
+                                        <Link to={"/clip/" + clip.id} className="button">Link to view</Link>
                                     </div>
                                     <pre><code>{JSON.stringify(clip, null, 2)}</code></pre>
                                 </div>
