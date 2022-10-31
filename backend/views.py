@@ -1,5 +1,6 @@
 from django.http import Http404
 from django.db import transaction
+from django.db.models import Q
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -10,6 +11,7 @@ from backend.read_stats import get_point_clips
 from backend.sync_view import youtube_id_from_url
 
 import re
+import json
 from datetime import datetime
 
 # Create your views here.
@@ -64,7 +66,18 @@ class TagList(APIView):
 
 class ClipList(APIView):
     def get(self, request, format=None):
+
         clips = Clip.objects.all()
+        
+        tag_groups = TagGroup.objects.all()
+        for tag_group in tag_groups:
+            tag_group_name = tag_group.name
+            tag_ids_in_group = request.GET.get(tag_group_name, '[]')
+            tag_ids_in_group = json.loads(tag_ids_in_group)
+
+            if(tag_ids_in_group and len(tag_ids_in_group) > 0):
+                clips = clips.filter(tag__in=tag_ids_in_group)    
+
         serializer = ClipSerializer(clips, many=True)
         return Response(serializer.data)
 
