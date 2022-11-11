@@ -36,6 +36,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:js": "esbuild javascript/app.jsx --bundle --sourcemap --outfile=static/app.js",
     "build:styles": "sass -I node_modules --update styles/stylesheet.scss:static/stylesheet.css",
+    "build:prod": "npm run build:styles:prod && npm run build:js:prod",
+    "build:js:prod": "esbuild javascript/app.jsx --bundle --minify --outfile=static/app.js",
+    "build:styles:prod": "sass -I node_modules --no-source-map styles/stylesheet.scss:static/stylesheet.css",
     "watch": "npm-watch"
   }
 }

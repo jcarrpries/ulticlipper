@@ -57,7 +57,6 @@ The project is split into a frontend, backend, database, and proxy.
 - Django split the configuration files into the `ulticlipper` directory, and the main backend code into the `backend` directory
 - Django REST framework is used to facilitate serializing data to and from JSON so it's easy to work with from the front end
 - Django REST framework provides convenient ways to browse the API, check it out at http://localhost/api/clips/
-- Django's admin interface can be viewed at http://localhost/admin, the username and password are configured in `Dockerfile-dev-django` and `docker-compose-dev.yml` respectively, and are `admin` and `asdf`.
 - `backend/views.py` is where code is called to respond to frontend requests.
 - `backend/urls.py` is used to add new API routes.
 - `backend/models.py` is where models can be configured.
