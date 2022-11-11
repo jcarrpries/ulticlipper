@@ -21,7 +21,12 @@ This should ensure all old resources are cleaned up so things can start fresh.
 
 Visit http://localhost to view the site once all the containers are running.
 
-##Debugging (Django )
+## Testing
+```
+docker build -t django-test -f deploy/dockerfiles/django-test.dockerfile . && docker run django-test
+```
+
+## Debugging (Django )
 Copy `launch_vscode_degugger.json` into `/.vscode` and rename file to `launch.json`
 
 Install the Docker extension in VS Code so that you can run docker compose up

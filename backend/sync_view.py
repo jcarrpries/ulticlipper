@@ -7,6 +7,8 @@ from rest_framework.response import Response
 from backend.models import Clip, TagGroup, Video, Tag, TagGroup
 from backend.stats_classes import EventType
 
+from pandas.errors import EmptyDataError
+
 from backend.read_stats import get_team_data, get_point_clips, get_game_data, get_game_objects
 
 from datetime import datetime
@@ -25,7 +27,10 @@ class SyncUpload(APIView):
     # return list of games
     def post(self, request, format=None):
         csv_file = request.data['file']
-        csv, unique_games = get_team_data(csv_file)
+        try:
+            csv, unique_games = get_team_data(csv_file)
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
         resp = []
         for game in unique_games:
             game_date, tournament, opponent = game
