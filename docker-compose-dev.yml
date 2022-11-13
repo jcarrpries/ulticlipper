@@ -2,9 +2,8 @@ version: "3.9"
 
 services:
     backend:
-        image: ulticlipper-backend-dev
         build:
-            dockerfile: deploy/dockerfiles/Dockerfile-dev-django
+            dockerfile: deploy/dockerfiles/django.dockerfile
         container_name: ulticlipper-backend-dev
         ports:
             - "80:80"
@@ -12,7 +11,6 @@ services:
             - .:/app:z
         restart: always
     frontend:
-        image: ulticlipper-frontend-dev
         build:
             dockerfile: deploy/dockerfiles/node-watch.dockerfile
         volumes:

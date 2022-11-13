@@ -23,7 +23,7 @@ Visit http://localhost to view the site once all the containers are running.
 
 ## Testing
 ```
-docker build -t django-test -f deploy/dockerfiles/django-test.dockerfile . && docker run django-test
+docker build -t django-test -f deploy/dockerfiles/django-test.dockerfile . && docker run --rm django-test
 ```
 
 ## Debugging (Django )

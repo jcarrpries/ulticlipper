@@ -16,6 +16,7 @@ Including another URLconf
 from django.urls import include, path, re_path
 from django.shortcuts import render
 from django.conf import settings
+from django.conf.urls.static import static
 
 def index(request, path=''):
     return render(request, 'index.html')
@@ -25,6 +26,7 @@ urlpatterns = [
 ]
 
 if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += [
         re_path(r'^$', index),
         re_path(r'^(?P<path>.*)/$', index),

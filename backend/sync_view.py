@@ -47,6 +47,8 @@ class SyncChooseGame(APIView):
     # editing clips and synchronizing is handled in frontend
     def post(self, request, format=None):
         youtube_id = youtube_id_from_url(request.data['url'])
+        if youtube_id == '':
+            return Response('Invalid youtube URL', status=status.HTTP_400_BAD_REQUEST)
         csv_file = request.data['file']
         game_date = datetime.fromisoformat(request.data['game_date'])
         tournament = request.data['tournament']
