@@ -2,7 +2,7 @@ SECRET_KEY = 'django-insecure-@50(tinlxmb)6ir0*1841a5@c$p+ai&2#jpaohbt(-_hri_pct
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['.localhost']
+ALLOWED_HOSTS = ['.localhost', '.backend', '.proxy']
 
 DATABASES = {
     'default': {

@@ -109,17 +109,17 @@ const SyncVerify = (props) => {
             </div>
             <div className="block">
                 <div className="buttons">
-                    <div className="button" onClick={nextClip}>
+                    <div className="button" onClick={nextClip} id="next-clip-button">
                         Next Clip
                     </div>
-                    <div className="button" onClick={jumpStart}>
+                    <div className="button" onClick={jumpStart} id="start-button">
                         Start: {fmtSeconds(clips[clipIdx].timestamp)}
                     </div>
-                    <div className="button" onClick={jumpEnd}>
+                    <div className="button" onClick={jumpEnd} id="end-button">
                         End: {fmtSeconds(clips[clipIdx].timestamp + clips[clipIdx].duration)}
                     </div>
-                    <div className="button is-warning" onClick={handleEdit}>Edit</div>
-                    <div className="button is-success" onClick={handleSubmit}>
+                    <div className="button is-warning" onClick={handleEdit} id="edit-button">Edit</div>
+                    <div className="button is-success" onClick={handleSubmit} id="submit-button">
                         Submit
                     </div>
                 </div>

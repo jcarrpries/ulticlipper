@@ -8,6 +8,8 @@
   "dependencies": {
     "bulma": "^0.9.4",
     "esbuild": "^0.15.9",
+    "esbuild-jest": "^0.5.0",
+    "jest": "^29.3.1",
     "npm-watch": "^0.11.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -15,6 +17,13 @@
     "react-youtube": "^10.0.0",
     "sass": "^1.55.0",
     "sass-true": "^6.1.0"
+  },
+  "jest": {
+    "preset": "jest-puppeteer",
+    "transform": {
+      "^.+\\.jsx?$": "esbuild-jest"
+    },
+    "setupFilesAfterEnv": ["expect-puppeteer"]
   },
   "watch": {
     "build:js": {
@@ -33,7 +42,7 @@
     }
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --runInBand --detectOpenHandles",
     "build:js": "esbuild javascript/app.jsx --bundle --sourcemap --outfile=static/app.js",
     "build:styles": "sass -I node_modules --update styles/stylesheet.scss:static/stylesheet.css",
     "build:prod": "npm run build:styles:prod && npm run build:js:prod",

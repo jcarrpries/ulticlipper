@@ -8,7 +8,6 @@ urlpatterns = [
     path('sync/upload/', SyncUpload.as_view()),
     path('sync/choosegame/', SyncChooseGame.as_view()),
     path('sync/commit/', SyncCommit.as_view()),
-    path('testimport/', views.TestStatsImport.as_view()),
 
     path('clips/', views.ClipList.as_view()),
     path('clips/<int:pk>/', views.ClipDetail.as_view()),

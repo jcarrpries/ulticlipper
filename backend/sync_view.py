@@ -30,6 +30,7 @@ class SyncUpload(APIView):
         try:
             csv, unique_games = get_team_data(csv_file)
         except Exception as e:
+            print(e)
             return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
         resp = []
         for game in unique_games:

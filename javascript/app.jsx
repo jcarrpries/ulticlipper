@@ -6,7 +6,6 @@ import Home from './home'
 import Nav from './nav'
 import Search from './search'
 import View from './view'
-import TestImport from './testimport'
 import TagSearch from './tagsearch'
 
 import Sync from './sync/sync'
@@ -20,7 +19,6 @@ const App = () => {
                 <Route path="/sync" element={<Sync />} />
                 <Route path="/search" element={<Search />} />
                 <Route path="/clip/:clipId" element={<View />} />
-                <Route path="/testimport" element={<TestImport />} />
                 <Route path="/tagsearch" element={<TagSearch />} />
             </Routes>
         </BrowserRouter>
@@ -33,3 +31,5 @@ document.addEventListener('DOMContentLoaded', () => {
         <App />
     )
 })
+
+export default App

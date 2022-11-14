@@ -22,8 +22,14 @@ This should ensure all old resources are cleaned up so things can start fresh.
 Visit http://localhost to view the site once all the containers are running.
 
 ## Testing
+Run python unit tests:
 ```
 docker build -t django-test -f deploy/dockerfiles/django-test.dockerfile . && docker run --rm django-test
+```
+
+Run puppeteer integration tests (docker-compose-ci.yml must be running):
+```
+docker build -t integration-test -f deploy/dockerfiles/integration-test.dockerfile . && docker run --rm --network=ulticlipper_default integration-test
 ```
 
 ## Debugging (Django )

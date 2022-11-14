@@ -1,11 +1,11 @@
 from .base import *
 import os
 
-environment_name = os.environ.get("ENV_NAME")
+ENV_NAME = os.environ.get("ENV_NAME")
 
-if environment_name == 'prod':
+if ENV_NAME == 'prod':
     from .prod import *
-elif environment_name == 'ci':
+elif ENV_NAME == 'ci':
     from .ci import *
 else:
     from .dev import *

@@ -11,7 +11,7 @@ const TagSearch = () => {
         fetch('/api/tag_groups').then((resp) => {
             return resp.json()
         }).then((json) => {
-            console.log('tag groups:', json)
+            // console.log('tag groups:', json)
             setTagGroups(json)
             handleTagGroupChange({ target: { value: json[0].id } })
         })

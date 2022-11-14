@@ -14,3 +14,4 @@ FROM caddy:2.6.1-alpine
 WORKDIR /app
 COPY --from=nodebuild /app/static /static
 COPY ./static/index.html /static
+COPY ./static/test_data /static/test_data
