@@ -8,7 +8,7 @@ const Home = () => {
             <section className="hero is-fullheight is-primary">
                 <div className="hero-body">
                     <div className="">
-                        <p className="title">
+                        <p className="title" id="hero-title-text">
                         The Ultimate Clipper Tool
                         </p>
                         <p className="subtitle">
