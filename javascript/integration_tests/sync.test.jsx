@@ -35,7 +35,7 @@ describe('App', () => {
     await expect(value).toMatch(/Synchronize clips/)
   })
 
-  jest.setTimeout(30000)
+  jest.setTimeout(60000)
   it('should have searchable and viewable clips after uploading', async () => {
     // expect to be on the homepage
     await expect(page.content()).resolves.toMatch(/The Ultimate Clipper Tool/)
