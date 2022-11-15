@@ -1,0 +1,57 @@
+name: Build and deploy
+
+on:
+  push:
+    branches: [ "live" ]
+
+jobs:
+
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: 'actions/checkout@v3'
+    - name: 'Build containers'
+      id: 'build'
+      run: |
+        ./dev build-prod
+        tar -zcvf artifacts.tar.gz dev docker-compose-prod.yml ulticlipper-proxy-prod.tar.gz ulticlipper-backend-prod.tar.gz
+        
+    - id: 'auth'
+      uses: 'google-github-actions/auth@v0'
+      with:
+        credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+    
+    - id: 'gcloud-setup'
+      uses: 'google-github-actions/setup-gcloud@v1'
+      
+    - id: 'compute-ssh-setup'
+      uses: 'google-github-actions/ssh-compute@v0.1.1'
+      with: 
+        instance_name: cos-test
+        zone: us-east1-b
+        user: 481444103467-compute
+        ssh_private_key: '${{ secrets.GCP_SSH_PRIVATE_KEY }}'
+        command: |
+          sudo rm -rf /var/deploy
+          sudo mkdir -p /var/deploy 
+          sudo touch /var/deploy/.env
+          sudo chown 481444103467-compute /var/deploy
+          echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" | sudo tee -a /var/deploy/.env
+        
+    - id: 'scp'
+      run: |
+        gcloud compute scp artifacts.tar.gz --zone="us-east1-b" 481444103467-compute@cos-test:/var/deploy
+        
+    - id: 'extract-and-run'
+      uses: 'google-github-actions/ssh-compute@v0.1.1'
+      with: 
+        instance_name: cos-test
+        zone: us-east1-b
+        user: 481444103467-compute
+        ssh_private_key: '${{ secrets.GCP_SSH_PRIVATE_KEY }}'
+        command: |
+          tar -zxvf /var/deploy/artifacts.tar.gz -C /var/deploy
+          sudo chmod +x /var/deploy/dev
+          sudo /bin/bash /var/deploy/dev deploy
+

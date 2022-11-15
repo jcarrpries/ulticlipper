@@ -17,6 +17,8 @@ urlpatterns = [
     path('tag_groups/<int:pk>/', views.TagGroupDetail.as_view()),
 
     path('clips_by_video/<int:pk>/', views.ClipsByVideo.as_view()),
+
+    path('healthcheck/', views.HealthCheck.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

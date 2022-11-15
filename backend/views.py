@@ -107,3 +107,6 @@ class ClipsByVideo(APIView):
 
         return Response(serializer.data)
 
+class HealthCheck(APIView):
+    def get(self, request):
+        return Response(status.HTTP_200_OK)

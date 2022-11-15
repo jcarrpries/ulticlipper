@@ -12,19 +12,16 @@ services:
             - "80:80"
             - "443:443"
         volumes:
-            - ./deploy/caddyfiles/ci.Caddyfile:/etc/caddy/Caddyfile
             - caddy_data:/data
     backend:
         depends_on:
         - database
         image: ulticlipper-backend-ci
         build:
-            dockerfile: deploy/dockerfiles/django.dockerfile
+            dockerfile: deploy/dockerfiles/django-prod.dockerfile
         container_name: ulticlipper-backend-ci
         environment:
             ENV_NAME: ci
-        volumes:
-            - .:/app:z
         restart: always
     database:
         image: postgres:14.5

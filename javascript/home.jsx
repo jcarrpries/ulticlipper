@@ -12,7 +12,7 @@ const Home = () => {
                         The Ultimate Clipper Tool
                         </p>
                         <p className="subtitle">
-                        Search for Ultimate clips across all your game footage
+                        Search for tagged clips across all your game footage
                         </p>
                     </div>
                 </div>
