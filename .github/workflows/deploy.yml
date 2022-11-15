@@ -15,7 +15,7 @@ jobs:
       id: 'build'
       run: |
         ./dev build-prod
-        tar -zcvf artifacts.tar.gz dev docker-compose-prod.yml ulticlipper-proxy-prod.tar.gz ulticlipper-backend-prod.tar.gz
+        tar -zcvf artifacts.tar.gz dev ulticlipper-proxy-prod.tar.gz ulticlipper-backend-prod.tar.gz
         
     - id: 'auth'
       uses: 'google-github-actions/auth@v0'
