@@ -38,8 +38,10 @@ describe('App', () => {
   jest.setTimeout(60000)
   it('should have searchable and viewable clips after uploading', async () => {
     // expect to be on the homepage
+    await page.waitForSelector('#hero-title-text')
     await expect(page.content()).resolves.toMatch(/The Ultimate Clipper Tool/)
     // navigate to search page
+    await page.waitForSelector('#search-nav-item')
     let [search_nav] = await page.$x('//a[contains(., "Search")]')
     await search_nav.click()
     await expect(page.content()).resolves.toMatch(/Search for clips/)
@@ -64,7 +66,7 @@ describe('App', () => {
     await page.type('#url-input', 'https://www.youtube.com/watch?v=B_RPq7Gh_20')
     // upload analytics file
     await page.evaluate(async () => {
-      fetch('/static/test_data/RaleighFlyers2019-stats.csv').then((resp) => {
+      await fetch('/static/test_data/RaleighFlyers2019-stats.csv').then((resp) => {
         return resp.text()
       }).then((text) => {
         let file = new File([text], 'testimport.csv')
@@ -136,7 +138,9 @@ describe('App', () => {
     // Press search
     await page.click('#search-button')
     // Expect there to be less than the previous number of results
-    await page.waitForSelector('#search-loading')
+    try {
+      await page.waitForSelector('#search-loading', {timeout: 2000})
+    } catch (err) {} // it's ok if we miss this
     results_count_el = await page.waitForSelector('#results-count')
     let results_count_2 = await results_count_el.evaluate(el => el.textContent)
 

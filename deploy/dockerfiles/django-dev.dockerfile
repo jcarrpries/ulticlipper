@@ -15,5 +15,6 @@ RUN pip install -r requirements.txt
 CMD python manage.py makemigrations \
     && python manage.py migrate \
     && python manage.py loaddata backend/fixtures/seed-events.json \
-    && python manage.py collectstatic --no-input \
-    && gunicorn ulticlipper.wsgi -b 0.0.0.0:80
+    # && python manage.py collectstatic --no-input \
+    && python manage.py runserver 0.0.0.0:80
+    # && gunicorn ulticlipper.wsgi -b 0.0.0.0:80
