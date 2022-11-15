@@ -3,7 +3,7 @@ version: "3.9"
 services:
     backend:
         build:
-            dockerfile: deploy/dockerfiles/django.dockerfile
+            dockerfile: deploy/dockerfiles/django-dev.dockerfile
         container_name: ulticlipper-backend-dev
         ports:
             - "80:80"

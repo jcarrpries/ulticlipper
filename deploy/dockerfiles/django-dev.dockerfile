@@ -1,9 +1,12 @@
-FROM python:3.10.7
+FROM python:3.10.7-slim
 
 EXPOSE 80
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
+
+RUN apt-get update \
+    && apt-get -y install libpq-dev gcc
 
 WORKDIR /app
 COPY requirements.txt /app/

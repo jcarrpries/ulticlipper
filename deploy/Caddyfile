@@ -1,4 +1,4 @@
-ulticlipper.jessmuir.com {
+{$ALLOWED_HOSTS} http://proxy http://localhost {
     handle /api* {
         reverse_proxy backend:80
     }
