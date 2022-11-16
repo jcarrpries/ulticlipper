@@ -7,6 +7,8 @@ services:
         container_name: ulticlipper-backend-dev
         ports:
             - "80:80"
+        environment:
+            ENV_NAME: dev
         volumes:
             - .:/app:z
         restart: always
