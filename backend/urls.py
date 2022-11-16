@@ -19,6 +19,7 @@ urlpatterns = [
     path('clips_by_video/<int:pk>/', views.ClipsByVideo.as_view()),
 
     path('healthcheck/', views.HealthCheck.as_view()),
+    path('cleardatabase/', views.ClearDatabase.as_view())
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

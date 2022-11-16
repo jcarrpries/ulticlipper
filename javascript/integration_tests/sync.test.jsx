@@ -18,7 +18,7 @@ describe('App', () => {
 
     // Clear database
     await page.evaluate(async () => {
-      fetch('/api/clips/', {method: 'DELETE'})
+      fetch('/api/cleardatabase/', {method: 'DELETE'})
     })
   })
 
@@ -151,9 +151,12 @@ describe('App', () => {
     await view_link.click()
     // Expect there to be an iframe
     await page.waitForSelector('iframe')
+    await page.waitForSelector('button')
     // Expect that there is a button with the text "10" (for the score timestamps)
-    await expect(page.$x('//button[contains(., "10")]')).resolves.toBeTruthy()
+    let [button_10_el] = await page.$x('//button[contains(., "10")]')
+    expect(button_10_el).toBeDefined()
     // Expect that there is a button with the text "GOAL" (for the events timestamps)
-    await expect(page.$x('//button[contains(., "GOAL")]')).resolves.toBeTruthy()
+    let [button_GOAL_el] = await page.$x('//button[contains(., "GOAL")]')
+    expect(button_GOAL_el).toBeDefined()
   })
 })

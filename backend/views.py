@@ -46,13 +46,6 @@ class ClipList(APIView):
         serializer = ClipSerializer(clips, many=True)
         return Response(serializer.data)
     
-    # Test helper method for clearing database when testing
-    def delete(self, request, format=None):
-        if settings.ENV_NAME[0] == 'p': # p for production, not allowed
-            return Response(status.HTTP_400_BAD_REQUEST)
-        Clip.objects.all().delete()
-        return Response(status.HTTP_200_OK)
-
 class ClipDetail(APIView):
     def get_object(self, pk):
         try:
@@ -109,4 +102,15 @@ class ClipsByVideo(APIView):
 
 class HealthCheck(APIView):
     def get(self, request):
+        return Response(status.HTTP_200_OK)
+
+class ClearDatabase(APIView):
+    # Test helper method for clearing database when testing
+    def delete(self, request):
+        if settings.ENV_NAME[0] == 'p': # p for production, not allowed
+            return Response(status.HTTP_400_BAD_REQUEST)
+        Clip.objects.all().delete()
+        Video.objects.all().delete()
+        TagGroup.objects.all().delete()
+        Tag.objects.all().delete()
         return Response(status.HTTP_200_OK)
