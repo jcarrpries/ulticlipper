@@ -1,3 +1,4 @@
+import time
 from django.http import Http404
 from django.db import transaction
 from django.db.models import Q
@@ -66,7 +67,7 @@ class TagList(APIView):
 
 class ClipList(APIView):
     def get(self, request, format=None):
-
+        start = round(time.time() * 1000)
         clips = Clip.objects.all()
         
         tag_groups = TagGroup.objects.all()
@@ -77,7 +78,7 @@ class ClipList(APIView):
 
             if(tag_ids_in_group and len(tag_ids_in_group) > 0):
                 clips = clips.filter(tag__in=tag_ids_in_group)    
-
+        print("millis", round(time.time() * 1000) - start)
         serializer = ClipSerializer(clips, many=True)
         return Response(serializer.data)
 

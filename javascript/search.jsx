@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import YouTube from 'react-youtube';
 
 
 const Search = () => {
@@ -9,7 +10,7 @@ const Search = () => {
 
     const searchRequest = (e) => {
         let query = ""
-
+        console.time()
         for (option of e.target) {
             if (option.selectedOptions) {
                 let id = option.id
@@ -34,6 +35,8 @@ const Search = () => {
             return resp.json()
         }).then((json) => {
             setClips(json)
+            console.timeEnd()
+
         })
         e.preventDefault()
     }
@@ -92,13 +95,14 @@ const Search = () => {
                             <div className="block"></div>
                             <div className="card">
                                 <div className="card-header">
-                                    <div className="card-header-title">Video ID: {clip.video.youtube_id}</div>
+                                    <div className="card-header-title">Video ID: {clip.video.title.substring(0,clip.video.title.length-21)}</div>
                                 </div>
                                 <div className="card-content">
-                                    <div className="block">
-                                        <Link to={"/clip/" + clip.id} className="button">Link to view</Link>
+                                <div className="block">
+
+                                    <Link to={"/clip/" + clip.id}><img src={"//img.youtube.com/vi/"+clip.video.youtube_id+"/0.jpg"} width="200" height="100"/></Link>
                                     </div>
-                                    <pre><code>{JSON.stringify(clip, null, 2)}</code></pre>
+                                    {/* <pre><code>{JSON.stringify(clip, null, 2)}</code></pre> */}
                                 </div>
                             </div>
                         </div>
