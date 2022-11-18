@@ -118,7 +118,7 @@ const Search = () => {
                             <div className="block"></div>
                             <div className="card">
                                 <div className="card-header">
-                                    <div className="card-header-title">Video ID: {clip.video.title.substring(0, clip.video.title.length - 21)}</div>
+                                    <div className="card-header-title">{clip.video.title.substring(0, clip.video.title.length - 21)}</div>
                                 </div>
                                 <div className="card-content">
                                     <div className="block">

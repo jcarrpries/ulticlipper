@@ -8,7 +8,7 @@ from backend.constants import EventStat
 def get_team_data(file:str) -> tuple[pd.DataFrame, list[list[str,str,str]]]:
     csv = pd.read_csv(file)
     csv.rename(columns={"Tournamemnt":"Tournament"}, inplace=True)
-    unique = csv.groupby(['Date/Time','Tournament', 'Opponent'])[['Date/Time','Tournament', 'Opponent']].apply(lambda x: list(np.unique(x)))
+    unique = csv.groupby(['Date/Time','Tournament', 'Opponent'])[['Date/Time','Tournament', 'Opponent']].first()
     csv['Date/Time']= pd.to_datetime(csv['Date/Time'])
 
     return csv, unique.values.tolist()

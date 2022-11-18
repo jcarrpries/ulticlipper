@@ -51,6 +51,7 @@ class SyncChooseGame(APIView):
         csv, games = get_team_data(csv_file)
         game_data = get_game_data(csv, tournament, opponent, game_date, 0)
         game_object = get_game_objects(game_data)
+        halftime = None
         for idx, event in enumerate(game_object.events):
             if event.event_type == EventType.HALFTIME:
                 # mark halftime as first event after halftime event
