@@ -1,0 +1,16 @@
+{$ALLOWED_HOSTS} http://proxy http://localhost {
+    handle /api* {
+        reverse_proxy backend:80
+    }
+
+    handle_path /static* {
+        root * /static
+        file_server
+    }
+
+    handle {
+        root * /static
+        try_files {path} index.html
+        file_server
+    }
+}

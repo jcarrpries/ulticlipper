@@ -8,6 +8,8 @@ const Search = () => {
     let [tagGroups, setTagGroups] = useState([])
     let [tags, setTags] = useState([])
     let [selectedOptions, setSelectedOptions] = useState({});
+    let [gotResults, setGotResults] = useState(false)
+    let [searchLoading, setSearchLoading] = useState(false)
 
     function searchRequest(e) {
         let query = ""
@@ -33,14 +35,18 @@ const Search = () => {
             query = query.substring(0, query.length - 1)
         }
 
-        console.log(query)
+        // console.log('/api/clips/?' + query)
 
+        setClips([])
+        setGotResults(false)
+        setSearchLoading(true)
         fetch('/api/clips/?' + query).then((resp) => {
             return resp.json()
         }).then((json) => {
             setClips(json)
             console.timeEnd()
-
+            setGotResults(true)
+            setSearchLoading(false)
         })
     }
 
@@ -56,7 +62,7 @@ const Search = () => {
         fetch('/api/tag_groups').then((resp) => {
             return resp.json()
         }).then((json) => {
-            console.log('tag groups:', json)
+            // console.log('tag groups:', json)
             setTagGroups(json)
         })
     }, [])
@@ -96,7 +102,7 @@ const Search = () => {
 
                             </div>
                             <div className="control">
-                                <button className="button is-primary" type="submit">Search</button>
+                                <button className="button is-primary" type="submit" id="search-button">Search</button>
                             </div>
                         </form>
 
@@ -108,13 +114,20 @@ const Search = () => {
                     </div>
                 </div>
             </div>
-            <div className="block">
-                <p>Results: {clips.length}</p>
-            </div>
+            {searchLoading &&
+                <div className="block">
+                    <p id="search-loading">Loading results...</p>
+                </div>
+            }
+            {gotResults &&
+                <div className="block">
+                    <p id="results-count">Results: {clips.length}</p>
+                </div>
+            }
             {
                 clips.map((clip) => {
                     return (
-                        <div key={clip.id}>
+                        <div key={'clip-' + clip.id}>
                             <div className="block"></div>
                             <div className="card">
                                 <div className="card-header">
@@ -122,7 +135,6 @@ const Search = () => {
                                 </div>
                                 <div className="card-content">
                                     <div className="block">
-
                                         <Link to={"/clip/" + clip.id}><img src={"//img.youtube.com/vi/" + clip.video.youtube_id + "/0.jpg"} width="200" height="100" /></Link>
                                     </div>
                                     {/* <pre><code>{JSON.stringify(clip, null, 2)}</code></pre> */}

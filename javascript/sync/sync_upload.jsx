@@ -31,7 +31,7 @@ const SyncUpload = (props) => {
 
     // LOAD DEFAULT FORM VALUE - FOR TESTING ONLY
     useEffect(() => {
-        fetch('/test_data/RaleighFlyers2019-stats.csv').then((resp) => {
+        fetch('/static/test_data/RaleighFlyers2019-stats.csv').then((resp) => {
             return resp.text()
         }).then((text) => {
             let file = new File([text], 'testimport.csv')
@@ -51,7 +51,7 @@ const SyncUpload = (props) => {
                 </div>
                 <div className="field">
                     <p className="control is-expanded">
-                        <input ref={urlInputRef} className="input" type="text"></input>
+                        <input ref={urlInputRef} className="input" type="text" id="url-input"></input>
                     </p>
                 </div>
                 <div className="field-label">
@@ -59,12 +59,12 @@ const SyncUpload = (props) => {
                 </div>
                 <div className="field">
                     <p className="control is-expanded">
-                        <input ref={fileInputRef} className="input" type="file"></input>
+                        <input ref={fileInputRef} className="input" type="file" id="stats-file-input"></input>
                     </p>
                 </div>
                 <div className="field">
                     <div className="control">
-                        <button className="button is-primary">Upload</button>
+                        <button className="button is-primary" id="upload-button">Upload</button>
                     </div>
                 </div>
             </div>

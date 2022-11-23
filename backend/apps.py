@@ -1,6 +1,5 @@
 from django.apps import AppConfig
 import json
-import requests
 
 class BackendConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'

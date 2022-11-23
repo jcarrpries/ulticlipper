@@ -11,7 +11,7 @@ const JumpButtons = (props) => {
     const [events, setEvents] = useState([]);
 
     useEffect(() => {
-        fetch(`/api/clips_by_video/${videoId}`)
+        fetch(`/api/clips_by_video/${props.clip.video.id}`)
                 .then(resp => resp.json())
                 .then(json => {
                     hist = {}
@@ -163,7 +163,7 @@ const YoutubePlayer = (props) => {
             }}
         />
 
-        <JumpButtons player={player}/>
+        <JumpButtons player={player} clip={clip}/>
 
     </div>
 

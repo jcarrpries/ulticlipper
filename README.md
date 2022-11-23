@@ -5,23 +5,23 @@ A web application to help Ultimate teams search through their game footage based
 - Docker
 
 ## Running
-Run with the following command to view the output from all containers:
-```
-docker compose -f docker-compose-dev.yml up --build; docker compose -f docker-compose-dev.yml down --volumes
-```
-or for Windows:
-```
-docker compose -f docker-compose-dev.yml up --build & docker compose -f docker-compose-dev.yml down --volumes
-```
-The reason the command is split in two is to ensure the resources get cleaned up at the end (mainly the Postgres container data volume). To quit, do `ctrl+C` twice. If you get an error on startup after starting multiple times, run
-```
-docker compose -f docker-compose-dev.yml down --volumes
-```
-This should ensure all old resources are cleaned up so things can start fresh.
+The file `dev` is a small shell script used as a task runner. Invoke it with `./dev <command>`. If you get a permission error, run `chmod +x ./dev`.
 
-Visit http://localhost to view the site once all the containers are running.
+Available commands are as follows:
+- `test`: Run Django unit tests (`deploy/dockerfiles/django-test.dockerfile)
+- `itest`: Run puppeteer integration tests. Automatically starts up the CI environment before running tests and tears down the environment after finishing running the tests.
+- `env <environment>`: Starts up the environment by envoking the docker compose file `docker-compose-<environment>`. E.g. `./dev env dev`
+- `down <environment>`: Tears down the given environment by running `docker compose down`.
+- `build-prod`: Builds the docker images used for production deployments and saves them as tar archives. Used in CI.
+- `deploy`: Meant to be run on the deployment server. Stops and prunes docker daemon containers and networks, loads the images expected from the continuous delivery system, and runs the images.
 
-##Debugging (Django )
+## Environments
+- `dev`: Runs a NodeJS container that watches for frontend changes and auto-builds, and runs a python container that serves static files and runs the backend and automatically restarts on python changes. Django uses SQLite as a database.
+- `ci`: Runs a caddy container with built-in static file serving, and a python container that runs the backend with gunicorn, and a database container that runs PostgreSQL. Containers don't auto-reload upon changes. Django uses Postgres as a database.
+
+More information about Django's configuration between environments can be found in `ulticlipper/settings`.
+
+## Debugging (Django )
 Copy `launch_vscode_degugger.json` into `/.vscode` and rename file to `launch.json`
 
 Install the Docker extension in VS Code so that you can run docker compose up
@@ -57,7 +57,6 @@ The project is split into a frontend, backend, database, and proxy.
 - Django split the configuration files into the `ulticlipper` directory, and the main backend code into the `backend` directory
 - Django REST framework is used to facilitate serializing data to and from JSON so it's easy to work with from the front end
 - Django REST framework provides convenient ways to browse the API, check it out at http://localhost/api/clips/
-- Django's admin interface can be viewed at http://localhost/admin, the username and password are configured in `Dockerfile-dev-django` and `docker-compose-dev.yml` respectively, and are `admin` and `asdf`.
 - `backend/views.py` is where code is called to respond to frontend requests.
 - `backend/urls.py` is used to add new API routes.
 - `backend/models.py` is where models can be configured.

@@ -20,8 +20,6 @@ const View = () => {
         })
     }, []);
 
-    videoId = 3
-
     return (
         <div className="card">
             <div className="card-content">

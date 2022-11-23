@@ -70,7 +70,7 @@ const SyncEdit = (props) => {
     return (
         <>
             <div className="block">
-                <p>Edit {selection} of clip</p>
+                <p>Edit {selection} of clip {parseInt(clipIdx)+1}</p>
             </div>
             <div className="block">
                 <YouTube
@@ -92,10 +92,10 @@ const SyncEdit = (props) => {
                     <button className="button is-primary" onClick={handleSelectionChange}>
                         Select {selection == 'start' ? 'end' : 'start'} of clip
                     </button>
-                    <button className="button is-danger" onClick={handleReset}>
+                    <button className="button is-danger" onClick={handleReset} id="reset-button">
                         Reset
                     </button>
-                    <button className="button is-success" onClick={handleContinue}>Continue</button>
+                    <button className="button is-success" onClick={handleContinue} id="continue-button">Continue</button>
                 </div>
             </div>
             <div className="block">
