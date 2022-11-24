@@ -93,6 +93,7 @@ const Search = () => {
                                                 }}
                                                 isSearchable={true}
                                                 isMulti
+                                                classNamePrefix="search-menu"
                                             />
                                         </div>
 

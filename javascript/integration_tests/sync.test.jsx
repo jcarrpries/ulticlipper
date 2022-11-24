@@ -1,5 +1,22 @@
 import 'expect-puppeteer'
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// To test out xpath expressions, run:
+// document.evaluate('//a[contains(@href, "clip")]', document).iterateNext()
+// in the browser console, but substitute the first argument for your xpath expression
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// react-select package has some nasty DOM manipulation going on, so some lengthy xpath expressions are required
+let reactSelectChooseOption = async (classPrefix, placeholderTextMatcher, optionTextMatcher) => {
+  let [select_dropdown_indicator] = await page.$x(
+    `//*[contains(@class, "${classPrefix}__placeholder") and contains(text(), "${placeholderTextMatcher}")]/../../div[contains(@class, "${classPrefix}__indicators")]/div`
+  )
+  await select_dropdown_indicator.click()
+
+  let [option_element] = await page.$x(`//*[contains(@class, "${classPrefix}__option") and contains(text(), "${optionTextMatcher}")]`)
+  await option_element.click()
+}
+
 describe('App', () => {
   beforeEach(async () => {
     await page.setViewport({
@@ -133,8 +150,8 @@ describe('App', () => {
     await expect(results_count_1).toMatch(/Results: \d\d+/)
 
     // Select 'GOAL' event type
-    let [goal_option] = await page.$x('//option[contains(., "GOAL")]')
-    await goal_option.click()
+    await reactSelectChooseOption('search-menu', 'event_type', 'GOAL')
+
     // Press search
     await page.click('#search-button')
     // Expect there to be less than the previous number of results
@@ -147,7 +164,7 @@ describe('App', () => {
     expect(parseInt(results_count_2.split(' ')[1])).toBeLessThan(parseInt(results_count_1.split(' ')[1]))
 
     // Press the link <a> that has view in the text
-    let [view_link] = await page.$x('//a[contains(., "view")]')
+    let [view_link] = await page.$x('//a[contains(@href, "/clip/")]')
     await view_link.click()
     // Expect there to be an iframe
     await page.waitForSelector('iframe')
