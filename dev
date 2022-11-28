@@ -54,6 +54,8 @@ fi
 if [[ $1 == "deploy" ]]; then
     docker container stop $(docker ps -aq)
     docker rm $(docker ps -aq)
+    docker image rm ulticlipper-backend-prod
+    docker image rm ulticlipper-proxy-prod
     docker network prune -f
     # docker import /var/deploy/ulticlipper-proxy-prod.tar.gz ulticlipper-proxy-prod
     # docker import /var/deploy/ulticlipper-backend-prod.tar.gz ulticlipper-backend-prod
