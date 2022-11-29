@@ -81,7 +81,7 @@ const SyncEdit = (props) => {
                         playerVars: {
                             modestBranding: 1,
                             rel: 0,
-                            start: 0,
+                            start: clips[clipIdx].timestamp,
                         }
                     }}
                 />

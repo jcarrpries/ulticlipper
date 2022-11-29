@@ -59,10 +59,16 @@ class SyncChooseGame(APIView):
         game_data = get_game_data(csv, tournament, opponent, game_date, 0)
         game_object = get_game_objects(game_data)
         halftime = None
+
+        # find halftime
         for idx, event in enumerate(game_object.events):
+            if int(event.our_score) + int(event.their_score) == 8:
+                # mark halftime as first event after halftime event
+                halftime = game_object.events[idx+1].event_start_elapsed
             if event.event_type == EventType.HALFTIME:
                 # mark halftime as first event after halftime event
                 halftime = game_object.events[idx+1].event_start_elapsed
+                break
         return Response({
             'youtube_id': youtube_id,
             'halftime': halftime,
