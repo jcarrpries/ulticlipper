@@ -83,7 +83,7 @@ const SyncHalves = (props) => {
                         playerVars: {
                             modestBranding: 1,
                             rel: 0,
-                            start: 0,
+                            start: clips[0].timestamp,
                         }
                     }}
                 />
