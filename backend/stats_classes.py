@@ -77,6 +77,8 @@ class EventType(Enum):
     HALFTIME = 13, 
     ENDOFTHIRDQUARTER = 14,
     GAMEOVER = 15,
+    ENDOFFOURTHQUARTER = 16,
+    ENDOFOVERTIME = 17,
 
 
 class Event:

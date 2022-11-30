@@ -1,0 +1,76 @@
+#!/bin/bash
+
+if [[ $1 == "test" ]]; then
+    echo "Running unit tests"
+    docker build -t django-test -f deploy/dockerfiles/django-test.dockerfile .
+    result=$?
+    docker run --rm django-test
+    if [[ result -ne 0 ]]; then
+        exit $result
+    fi
+fi
+
+if [[ $1 == "itest" ]]; then
+    echo "Running integration tests"
+    docker compose -f docker-compose-ci.yml up --build -d
+    # wait for django container to come alive
+    while true; do
+        curl -f -s localhost/api/healthcheck/
+        if [[ $? -eq 0 ]]; then
+            break
+        fi
+        sleep 1
+    done
+    # run test container
+    docker build -t integration-test -f deploy/dockerfiles/integration-test.dockerfile .
+    docker run --rm --network=$(basename $PWD)_default integration-test
+    result=$?
+    docker compose -f docker-compose-ci.yml down --volumes
+    if [[ result -ne 0 ]]; then
+        exit $result
+    fi
+fi
+
+if [[ $1 == "env" ]]; then
+    echo Setting up $2 environment
+    exec docker compose -f docker-compose-$2.yml up --build
+fi
+
+if [[ $1 == "down" ]]; then
+    echo Taking down $2 environment
+    exec docker compose -f docker-compose-$2.yml down --volumes
+fi
+
+if [[ $1 == "build-prod" ]]; then
+    docker build  -f deploy/dockerfiles/caddy.dockerfile . -t ulticlipper-proxy-prod
+    docker build  -f deploy/dockerfiles/django-prod.dockerfile . -t ulticlipper-backend-prod
+    docker save -o ulticlipper-proxy-prod.tar.gz ulticlipper-proxy-prod
+    docker save -o ulticlipper-backend-prod.tar.gz ulticlipper-backend-prod
+    # docker build --output type=tar,dest= -f deploy/dockerfiles/caddy.dockerfile . > ulticlipper-proxy-prod.tar.gz
+    # docker build --output type=tar,dest=- -f deploy/dockerfiles/django-prod.dockerfile . > ulticlipper-backend-prod.tar.gz
+fi
+
+# For running on server
+if [[ $1 == "deploy" ]]; then
+    docker container stop $(docker ps -aq)
+    docker rm $(docker ps -aq)
+    docker image rm ulticlipper-backend-prod
+    docker image rm ulticlipper-proxy-prod
+    docker network prune -f
+    # docker import /var/deploy/ulticlipper-proxy-prod.tar.gz ulticlipper-proxy-prod
+    # docker import /var/deploy/ulticlipper-backend-prod.tar.gz ulticlipper-backend-prod
+    docker load -i /var/deploy/ulticlipper-proxy-prod.tar.gz
+    docker load -i /var/deploy/ulticlipper-backend-prod.tar.gz
+    
+    docker network create ulticlipper
+    docker run -d -v postgres_data:/var/lib/postgresql/data --name ulticlipper-database-prod \
+        -e POSTGRES_USER=backend -e POSTGRES_PASSWORD=good_password \
+        --network=ulticlipper \
+        postgres:14.5 
+    docker run -d --name backend -e ENV_NAME=prod --env-file /var/deploy/.env \
+        --network=ulticlipper \
+        ulticlipper-backend-prod
+    docker run -d -v caddy_data:/data --name proxy -p 80:80 -p 443:443 -e ALLOWED_HOSTS=ulticlipper.jessmuir.com \
+        --network=ulticlipper \
+        ulticlipper-proxy-prod 
+fi

@@ -83,7 +83,7 @@ const SyncHalves = (props) => {
                         playerVars: {
                             modestBranding: 1,
                             rel: 0,
-                            start: 0,
+                            start: clips[0].timestamp,
                         }
                     }}
                 />
@@ -94,7 +94,7 @@ const SyncHalves = (props) => {
                     <button className="button is-primary" onClick={handleSelectionChange}>
                         Select {halfSelection == 'first' ? 'second' : 'first'} half
                     </button>
-                    <button className="button is-success" onClick={handleContinue}>Continue</button>
+                    <button className="button is-success" onClick={handleContinue} id="continue-button">Continue</button>
                 </div>
             </div>
             <div className="block">

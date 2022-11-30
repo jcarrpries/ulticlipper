@@ -8,7 +8,6 @@ urlpatterns = [
     path('sync/upload/', SyncUpload.as_view()),
     path('sync/choosegame/', SyncChooseGame.as_view()),
     path('sync/commit/', SyncCommit.as_view()),
-    path('testimport/', views.TestStatsImport.as_view()),
 
     path('clips/', views.ClipList.as_view()),
     path('clips/<int:pk>/', views.ClipDetail.as_view()),
@@ -18,6 +17,9 @@ urlpatterns = [
     path('tag_groups/<int:pk>/', views.TagGroupDetail.as_view()),
 
     path('clips_by_video/<int:pk>/', views.ClipsByVideo.as_view()),
+
+    path('healthcheck/', views.HealthCheck.as_view()),
+    path('cleardatabase/', views.ClearDatabase.as_view())
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

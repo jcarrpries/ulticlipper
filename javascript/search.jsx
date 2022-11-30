@@ -1,20 +1,26 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import Select from 'react-select';
 
 
 const Search = () => {
     let [clips, setClips] = useState([])
     let [tagGroups, setTagGroups] = useState([])
     let [tags, setTags] = useState([])
+    let [selectedOptions, setSelectedOptions] = useState({});
+    let [gotResults, setGotResults] = useState(false)
+    let [searchLoading, setSearchLoading] = useState(false)
 
-    const searchRequest = (e) => {
+    function searchRequest(e) {
         let query = ""
+        e.preventDefault()
 
-        for (option of e.target) {
-            if (option.selectedOptions) {
-                let id = option.id
+        console.time()
+
+        for (id in selectedOptions) {
+            if (selectedOptions[id]) {
                 let sub_query = ""
-                for (selectedOption of option.selectedOptions) {
+                for (selectedOption of selectedOptions[id]) {
                     sub_query += selectedOption.value + ","
                 }
                 if (sub_query.length > 0) {
@@ -22,20 +28,33 @@ const Search = () => {
                     query += id + "=[" + sub_query + "]&"
                 }
             }
+
         }
 
         if (query[query.length - 1] == "&") {
             query = query.substring(0, query.length - 1)
         }
 
-        console.log(query)
+        // console.log('/api/clips/?' + query)
 
+        setClips([])
+        setGotResults(false)
+        setSearchLoading(true)
         fetch('/api/clips/?' + query).then((resp) => {
             return resp.json()
         }).then((json) => {
             setClips(json)
+            console.timeEnd()
+            setGotResults(true)
+            setSearchLoading(false)
         })
-        e.preventDefault()
+    }
+
+    // Function triggered on selection
+    function handleSelect(data, item) {
+        selectedOptions[item] = data
+        console.log(selectedOptions)
+        setSelectedOptions(selectedOptions);
     }
 
     // use useEffect to run this code once when the component loads
@@ -43,7 +62,7 @@ const Search = () => {
         fetch('/api/tag_groups').then((resp) => {
             return resp.json()
         }).then((json) => {
-            console.log('tag groups:', json)
+            // console.log('tag groups:', json)
             setTagGroups(json)
         })
     }, [])
@@ -57,24 +76,38 @@ const Search = () => {
                 <div className="card-content">
                     <div className="container">
                         <form onSubmit={searchRequest}>
-                            {tagGroups.map((group, idx) => {
-                                return (
-                                    <span>
-                                        <label for={group.name}>{group.name}</label>
-                                        <select id={group.name} name={group.name} multiple>
-                                            {group.tags.map((tag, idx) => {
-                                                return (
-                                                    <option key={idx} value={tag.id}>{tag.name}</option>
-                                                )
-                                            })}
-                                        </select>
-                                    </span>
-                                )
-                            })}
+                            <div className="search-menu">
+                                {tagGroups.map((group, idx) => {
+                                    return (
+                                        <div style={{ width: '550px'}}>
+                                            {/* <div className="card-header-title">{group.name}</div> */}
+
+                                            <Select
+                                                options={group.tags.map((entry) => {
+                                                    return { "value": entry.id, "label": entry.name }
+                                                })}
+                                                placeholder={"Select " + group.name}
+                                                value={selectedOptions[group.name]}
+                                                onChange={function (data) {
+                                                    handleSelect(data, group.name)
+                                                }}
+                                                isSearchable={true}
+                                                isMulti
+                                                classNamePrefix="search-menu"
+                                            />
+                                        </div>
+
+
+                                    )
+                                })}
+
+                            </div>
                             <div className="control">
-                                <button className="button is-primary" type="submit">Search</button>
+                                <button className="button is-primary" type="submit" id="search-button">Search</button>
                             </div>
                         </form>
+
+
                     </div>
                     <div>
 
@@ -82,23 +115,30 @@ const Search = () => {
                     </div>
                 </div>
             </div>
-            <div className="block">
-                <p>Results: {clips.length}</p>
-            </div>
+            {searchLoading &&
+                <div className="block">
+                    <p id="search-loading">Loading results...</p>
+                </div>
+            }
+            {gotResults &&
+                <div className="block">
+                    <p id="results-count">Results: {clips.length}</p>
+                </div>
+            }
             {
                 clips.map((clip) => {
                     return (
-                        <div key={clip.id}>
+                        <div key={'clip-' + clip.id}>
                             <div className="block"></div>
                             <div className="card">
                                 <div className="card-header">
-                                    <div className="card-header-title">Video ID: {clip.video.youtube_id}</div>
+                                    <div className="card-header-title">{clip.video.title.substring(0, clip.video.title.length - 21)}</div>
                                 </div>
                                 <div className="card-content">
                                     <div className="block">
-                                        <Link to={"/clip/" + clip.id} className="button">Link to view</Link>
+                                        <Link to={"/clip/" + clip.id}><img src={"//img.youtube.com/vi/" + clip.video.youtube_id + "/0.jpg"} width="200" height="100" /></Link>
                                     </div>
-                                    <pre><code>{JSON.stringify(clip, null, 2)}</code></pre>
+                                    {/* <pre><code>{JSON.stringify(clip, null, 2)}</code></pre> */}
                                 </div>
                             </div>
                         </div>

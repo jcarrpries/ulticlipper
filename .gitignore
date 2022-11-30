@@ -7,3 +7,4 @@ static/*.js
 static/*.js.map
 static/*.css
 static/*.css.map
+static/rest_framework

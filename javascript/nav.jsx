@@ -8,9 +8,9 @@ const Nav = () => {
                 <div className="navbar-item">
                     <Link to="/"><h6 className="title">Ultimate Clipper</h6></Link>
                 </div>
-                <Link to="/sync" className="navbar-item">Sync</Link>
+                <Link to="/sync" className="navbar-item" id="sync-nav-item">Sync</Link>
                 {/* <Link to="/testimport" className="navbar-item">TestImport</Link> */}
-                <Link to="/search" className="navbar-item">Search</Link>
+                <Link to="/search" className="navbar-item" id="search-nav-item">Search</Link>
                 <Link to="/tagsearch" className="navbar-item">TagSearch</Link>
             </div>
         </div>
