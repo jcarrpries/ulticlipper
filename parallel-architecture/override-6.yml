@@ -1,0 +1,7 @@
+version: "3.9"
+
+services:
+    backend:
+        deploy:
+            replicas: 6
+

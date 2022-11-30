@@ -1,0 +1,19 @@
+
+sync/upload/
+sync/choosegame/
+sync/commit/
+testimport/
+
+a
+
+clips/ # 5 seconds
+clips_by_video/3 # 10 seconds
+tags/ # 2.22 seconds
+
+clips/3 # 60 to 200 ms
+tags/3 # 4 seconds
+
+tag_groups/ #0.6 to 2.3 seconds
+tag_groups/3 # 100 to 200 ms
+
+
