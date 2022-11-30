@@ -37,5 +37,8 @@
     "build:js": "esbuild javascript/app.jsx --bundle --sourcemap --outfile=static/app.js",
     "build:styles": "sass -I node_modules --update styles/stylesheet.scss:static/stylesheet.css",
     "watch": "npm-watch"
+  },
+  "devDependencies": {
+    "axios": "^1.1.3"
   }
 }
