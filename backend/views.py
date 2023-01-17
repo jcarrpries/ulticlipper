@@ -19,10 +19,10 @@ from datetime import datetime
 # Create your views here.
 
 class TagGroupList(APIView):
-	def get(self, request, format=None):
-		tag_groups = TagGroup.objects.all()
-		serializer = TagGroupSerializer(tag_groups, many=True)
-		return Response(serializer.data)
+    def get(self, request, format=None):
+        tag_groups = TagGroup.objects.all()
+        serializer = TagGroupSerializer(tag_groups, many=True)
+        return Response(serializer.data)
 
 class TagList(APIView):
     def get(self, request, format=None):
@@ -83,7 +83,11 @@ class TagDetail(APIView):
         serializer = TagClipSerializer(tag)
         return Response(serializer.data)
 
-
+class VideoList(APIView):
+    def get(self, request, format=None):
+        tags = Tag.objects.all()
+        serializer = TagSerializer(tags, many=True)
+        return Response(serializer.data)
 """
 Get clips within a video that a user might want to "Jump" to
 

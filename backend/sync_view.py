@@ -106,12 +106,10 @@ class SyncCommit(APIView):
                             tag_group, _ = TagGroup.objects.get_or_create(name=group)
                             if group == 'players_on':
                                 for player_name in name:
-                                    tag, _ = Tag.objects.get_or_create(name=player_name)
-                                    tag_group.tags.add(tag)
+                                    tag, _ = Tag.objects.get_or_create(name=player_name, group=tag_group)
                                     tag.clips.add(new_event)
                             else:
-                                tag, _ = Tag.objects.get_or_create(name=name)
-                                tag_group.tags.add(tag)
+                                tag, _ = Tag.objects.get_or_create(name=name, group=tag_group)
                                 tag.clips.add(new_event)
     
         except IntegrityError:

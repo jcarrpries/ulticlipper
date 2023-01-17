@@ -15,6 +15,7 @@ urlpatterns = [
     path('tags/<int:pk>/', views.TagDetail.as_view()),
 	path('tag_groups/', views.TagGroupList.as_view()),
     path('tag_groups/<int:pk>/', views.TagGroupDetail.as_view()),
+	path('videos/', views.VideoList.as_view()),
 
     path('clips_by_video/<int:pk>/', views.ClipsByVideo.as_view()),
 

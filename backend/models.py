@@ -15,15 +15,15 @@ class Clip(models.Model):
     class Meta:
         ordering = ['timestamp']
 
-class Tag(models.Model):
+class TagGroup(models.Model):
     name = models.CharField(max_length=50)
-    clips = models.ManyToManyField(Clip)
+    
     class Meta:
         indexes = [models.Index(fields=['name']), ]
 
-class TagGroup(models.Model):
+class Tag(models.Model):
     name = models.CharField(max_length=50)
-    tags = models.ManyToManyField(Tag)
-    
+    clips = models.ManyToManyField(Clip)
+    group = models.ForeignKey(TagGroup, on_delete=models.PROTECT, null=True)
     class Meta:
         indexes = [models.Index(fields=['name']), ]
