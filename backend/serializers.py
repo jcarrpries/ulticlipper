@@ -47,7 +47,7 @@ class EventSerializer(serializers.ModelSerializer):
 
     def get_event_types(self, clip):
         # Filter tags that belong to Tag Group Event
-        event_tags = clip.tag_set.filter(taggroup__name="event_type") # All event_type tags
+        event_tags = clip.tag_set.filter(group__name="event_type") # All event_type tags
 
         serializer = EventNameSerializer(event_tags, many=True)
 
