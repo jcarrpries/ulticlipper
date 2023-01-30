@@ -28,7 +28,7 @@ class TagGroupSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = TagGroup
-		fields = "__all__"
+		fields = ["id", "name", "tags"]
 
 class TagClipSerializer(serializers.ModelSerializer):
     clips = ClipSerializer(many=True, read_only=True)

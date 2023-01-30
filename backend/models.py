@@ -24,6 +24,6 @@ class TagGroup(models.Model):
 class Tag(models.Model):
     name = models.CharField(max_length=50)
     clips = models.ManyToManyField(Clip)
-    group = models.ForeignKey(TagGroup, on_delete=models.PROTECT, null=True)
+    group = models.ForeignKey(TagGroup, related_name='tags', on_delete=models.PROTECT, null=True)
     class Meta:
         indexes = [models.Index(fields=['name']), ]
