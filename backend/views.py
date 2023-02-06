@@ -5,8 +5,8 @@ from django.db.models import Q
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from backend.models import Clip, Video, Tag, TagGroup
-from backend.serializers import ClipSerializer, EventSerializer, TagClipSerializer, TagSerializer, VideoSerializer, TagGroupSerializer, EventSerializer
+from backend.models import Clip, Video, Tag, TagGroup, Comment
+from backend.serializers import ClipSerializer, EventSerializer, TagClipSerializer, TagSerializer, VideoSerializer, TagGroupSerializer, EventSerializer, CommentSerializer
 from django.conf import settings
 
 from backend.read_stats import get_point_clips
@@ -85,9 +85,16 @@ class TagDetail(APIView):
 
 class VideoList(APIView):
     def get(self, request, format=None):
-        tags = Tag.objects.all()
-        serializer = TagSerializer(tags, many=True)
+        videos = Video.objects.all()
+        serializer = VideoSerializer(videos, many=True)
         return Response(serializer.data)
+
+class VideoDetail(APIView):
+    def get(self, request, pk):
+        video = Video.objects.get(pk=pk)
+        serializer = VideoSerializer(video)
+        return Response(serializer.data)
+
 """
 Get clips within a video that a user might want to "Jump" to
 
@@ -104,6 +111,32 @@ class ClipsByVideo(APIView):
         serializer = EventSerializer(clips, many=True)
 
         return Response(serializer.data)
+
+class CommentsByVideo(APIView):
+    def get(self, request, pk):
+        comments = Comment.objects.filter(video=pk)
+        serializer = CommentSerializer(comments, many=True)
+
+        return Response(serializer.data)
+
+    def post(self, request, pk, format=None):
+        text = request.data['text']
+        timestamp = int(request.data['timestamp'])
+        annotation = request.data['annotation']
+        video_id = int(request.data['video_id'])
+
+        video = Video.objects.get(pk=video_id)
+
+        new_comment = Comment(
+            text=text,
+            timestamp=timestamp,
+            annotation=annotation,
+            video=video
+        )
+        new_comment.save()
+        serializer = CommentSerializer(new_comment)
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class HealthCheck(APIView):
     def get(self, request):

@@ -12,10 +12,13 @@ const YoutubePlayer = (props) => {
     // load default props
     const clip = props.clip
     const setPlayer = props.setPlayer
+    const video = props.video
 
     // youtube api handlers
     const handleReady = (event) => {
-        setPlayer(event.target);
+        if (setPlayer) {
+            setPlayer(event.target);
+        }
     }
     const handlePlay = (event) => {
         // console.log("handlePlay", event)
@@ -36,7 +39,7 @@ const YoutubePlayer = (props) => {
 
     return <div>
         <YouTube
-            videoId={clip.video.youtube_id} // initial video id
+            videoId={clip ? clip.video.youtube_id : video.youtube_id} // initial video id
             onReady={handleReady}
             onPlay={handlePlay}
             onPause={handlePause}
@@ -51,7 +54,7 @@ const YoutubePlayer = (props) => {
                     modestbranding: 1,
                     rel: 0, // only show related videos from same channel
                     // https://developers.google.com/youtube/player_parameters
-                    start: clip.timestamp,
+                    start: clip ? clip.timestamp : 0,
                 },
             }}
         />

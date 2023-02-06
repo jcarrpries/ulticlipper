@@ -27,3 +27,12 @@ class Tag(models.Model):
     group = models.ForeignKey(TagGroup, related_name='tags', on_delete=models.PROTECT, null=True)
     class Meta:
         indexes = [models.Index(fields=['name']), ]
+
+class Comment(models.Model):
+    text = models.CharField(max_length=280)
+    timestamp = models.IntegerField()
+    annotation = models.CharField(max_length=65000)
+    video = models.ForeignKey(Video, on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ['timestamp']
