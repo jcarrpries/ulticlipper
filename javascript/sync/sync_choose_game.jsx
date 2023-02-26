@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 
+import { getCsrfToken } from '../auth/auth_manager'
+
 const SyncChooseGame = (props) => {
     const {
         setSyncStep,
@@ -25,6 +27,9 @@ const SyncChooseGame = (props) => {
         fetch('/api/sync/choosegame/', {
             'method': 'POST',
             'body': data,
+            'headers': {
+                'X-CSRFToken': getCsrfToken(),
+            }
         }).then((resp) => {
             return resp.json()
         }).then((json) => {
@@ -54,8 +59,8 @@ const SyncChooseGame = (props) => {
                             <td>{game.opponent}</td>
                             <td>{game.game_date}</td>
                             <td>
-                                <button 
-                                    className="button is-primary is-small" 
+                                <button
+                                    className="button is-primary is-small"
                                     onClick={() => handleSelectGame(game)}
                                 >Select</button>
                             </td>

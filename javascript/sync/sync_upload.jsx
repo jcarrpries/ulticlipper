@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 
+import { getCsrfToken } from '../auth/auth_manager'
+
 const SyncUpload = (props) => {
     let fileInputRef = useRef(null)
     let urlInputRef = useRef(null)
@@ -21,6 +23,9 @@ const SyncUpload = (props) => {
         fetch('/api/sync/upload/', {
             'method': 'POST',
             'body': data,
+            'headers': {
+                'X-CSRFToken': getCsrfToken(),
+            }
         }).then((resp) => {
             return resp.json()
         }).then((json) => {

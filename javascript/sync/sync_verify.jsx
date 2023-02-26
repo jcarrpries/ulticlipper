@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react'
 
 import YouTube from 'react-youtube'
+import { getCsrfToken } from '../auth/auth_manager'
 import fmtSeconds from '../util'
 
 const SyncVerify = (props) => {
@@ -65,6 +66,9 @@ const SyncVerify = (props) => {
         fetch('/api/sync/commit/', {
             'method': 'POST',
             'body': data,
+            'headers': {
+                'X-CSRFToken': getCsrfToken(),
+            }
         }).then((resp) => {
             return resp.json()
         }).then((json) => {

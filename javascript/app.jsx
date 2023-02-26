@@ -7,22 +7,34 @@ import Nav from './nav'
 import Search from './search'
 import View from './view'
 import TagSearch from './tagsearch'
+import Auth from './auth'
 
 import Sync from './sync/sync'
+import useAuthState from './auth/auth_state_hook'
+
+import LoginPage from './auth/login_page'
+
+
+// The main App, shown when the User is signed in
+const MainApp = () => {
+    return <BrowserRouter>
+        <Nav />
+        <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/sync" element={<Sync />} />
+            <Route path="/search" element={<Search />} />
+            <Route path="/clip/:clipId" element={<View />} />
+            <Route path="/tagsearch" element={<TagSearch />} />
+            <Route path="/auth" element={<Auth />} />
+        </Routes>
+    </BrowserRouter>
+}
+
 
 const App = () => {
-    return (
-        <BrowserRouter>
-            <Nav />
-            <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/sync" element={<Sync />} />
-                <Route path="/search" element={<Search />} />
-                <Route path="/clip/:clipId" element={<View />} />
-                <Route path="/tagsearch" element={<TagSearch />} />
-            </Routes>
-        </BrowserRouter>
-    )
+    const authState = useAuthState()
+    return (authState.is_authenticated !== false) ? <MainApp/> : <LoginPage/>
+
 }
 
 document.addEventListener('DOMContentLoaded', () => {
