@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from backend.models import Clip, Video, Tag, TagGroup
+from backend.models import Clip, Video, Tag, TagGroup, Comment
 
 class VideoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -57,3 +57,8 @@ class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Clip
         fields = ["timestamp", "event_types"]
+
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ["timestamp", "text", "annotation"]

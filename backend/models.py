@@ -40,3 +40,13 @@ class InviteCode(models.Model): # One-time code to invite user to team
 class UserData(models.Model): # Extra data about users that can't be stored in the built-in User model
     user = models.OneToOneField(User, related_name='user_data', on_delete=models.CASCADE)
     active_team = models.ForeignKey(Team, related_name='active_users', on_delete=models.SET_NULL, null=True)
+
+class Comment(models.Model):
+    text = models.CharField(max_length=280)
+    timestamp = models.IntegerField()
+    annotation = models.CharField(max_length=65000)
+    video = models.ForeignKey(Video, on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ['timestamp']
+

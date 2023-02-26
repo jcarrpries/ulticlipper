@@ -7,7 +7,9 @@ import Nav from './nav'
 import Search from './search'
 import View from './view'
 import TagSearch from './tagsearch'
+
 import Auth from './auth'
+import DrawDemo from './drawdemo'
 
 import Sync from './sync/sync'
 import useAuthState from './auth/auth_state_hook'
@@ -25,6 +27,7 @@ const MainApp = () => {
             <Route path="/search" element={<Search />} />
             <Route path="/clip/:clipId" element={<View />} />
             <Route path="/tagsearch" element={<TagSearch />} />
+            <Route path="/drawdemo" element={<DrawDemo />} />
             <Route path="/auth" element={<Auth />} />
         </Routes>
     </BrowserRouter>
@@ -34,7 +37,6 @@ const MainApp = () => {
 const App = () => {
     const authState = useAuthState()
     return (authState.is_authenticated !== false) ? <MainApp/> : <LoginPage/>
-
 }
 
 document.addEventListener('DOMContentLoaded', () => {
