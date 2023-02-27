@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('backend', '0007_alter_tag_group'),
+        ('backend', '0008_comment'),
     ]
 
     operations = [

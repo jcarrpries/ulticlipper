@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('backend', '0008_team_invitecode'),
+        ('backend', '0009_team_invitecode'),
     ]
 
     operations = [
