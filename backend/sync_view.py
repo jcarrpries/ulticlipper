@@ -15,6 +15,8 @@ from datetime import datetime
 import re
 import json
 
+from backend.auth_view import get_active_team
+
 def youtube_id_from_url(url):
     regex = re.compile('\?v=([a-zA-Z0-9_-]{11})')
     vid_id_matches = re.search(regex, url)
@@ -87,8 +89,12 @@ class SyncCommit(APIView):
         tournament = request.data['tournament']
         opponent = request.data['opponent']
 
+        active_team = get_active_team(request)
+        if active_team == None:
+            return Response("no-active-team", status=400)
+
         youtube_id = youtube_id_from_url(url)
-        new_video = Video(title=f'{tournament} - vs. {opponent}, {str(game_date)}', youtube_id=youtube_id)
+        new_video = Video(title=f'{tournament} - vs. {opponent}, {str(game_date)}', youtube_id=youtube_id, team=active_team)
         try:
             with transaction.atomic():
                 new_video.save()
@@ -97,22 +103,23 @@ class SyncCommit(APIView):
                         timestamp=event['event_start_elapsed'],
                         date=parse_date(event['datetime_game']),
                         duration=0,
-                        video=new_video
+                        video=new_video,
+                        team=active_team
                     )
                     new_event.save()
                     for group, name in event.items():
                         ignore_fields = ['datetime_game', 'event_start_elapsed']
                         if group not in ignore_fields and name is not None and name != 'Anonymous':
-                            tag_group, _ = TagGroup.objects.get_or_create(name=group)
+                            tag_group, _ = TagGroup.objects.get_or_create(name=group, team=active_team)
                             if group == 'players_on':
                                 for player_name in name:
-                                    tag, _ = Tag.objects.get_or_create(name=player_name, group=tag_group)
+                                    tag, _ = Tag.objects.get_or_create(name=player_name, group=tag_group, team=active_team)
                                     tag.clips.add(new_event)
                             else:
-                                tag, _ = Tag.objects.get_or_create(name=name, group=tag_group)
+                                tag, _ = Tag.objects.get_or_create(name=name, group=tag_group, team=active_team)
                                 tag.clips.add(new_event)
-    
+
         except IntegrityError:
             return Response(status.HTTP_400_BAD_REQUEST)
-        
+
         return Response(status.HTTP_201_CREATED)

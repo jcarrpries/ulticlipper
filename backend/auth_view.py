@@ -263,3 +263,11 @@ class SetActiveTeam(APIView):
 
         return Response(get_auth_state(user))
 
+
+"""Get the active team for a request"""
+def get_active_team(request):
+    user: User = request.user
+    if user is None:
+        return None
+
+    return user.user_data.active_team

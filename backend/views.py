@@ -2,6 +2,7 @@ import time
 from django.http import Http404
 from django.db import transaction
 from django.db.models import Q
+from backend.auth_view import get_active_team
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -20,78 +21,111 @@ from datetime import datetime
 
 class TagGroupList(APIView):
     def get(self, request, format=None):
-        tag_groups = TagGroup.objects.all()
+        active_team = get_active_team(request)
+        if active_team == None:
+            return Response("no-active-team", status=400)
+
+        tag_groups = TagGroup.objects.filter(team=active_team)
         serializer = TagGroupSerializer(tag_groups, many=True)
         return Response(serializer.data)
 
 class TagList(APIView):
     def get(self, request, format=None):
-        tags = Tag.objects.all()
+        active_team = get_active_team(request)
+        if active_team == None:
+            return Response("no-active-team", status=400)
+
+        tags = Tag.objects.filter(team=active_team)
         serializer = TagSerializer(tags, many=True)
         return Response(serializer.data)
 
 class ClipList(APIView):
     def get(self, request, format=None):
+
+        active_team = get_active_team(request)
+        if active_team is None:
+            return Response("no-active-team", status=400)
+
         start = round(time.time() * 1000)
-        clips = Clip.objects.all()
-        
-        tag_groups = TagGroup.objects.all()
+        clips = Clip.objects.filter(team=active_team)
+
+        tag_groups = TagGroup.objects.filter(team=active_team)
         for tag_group in tag_groups:
             tag_group_name = tag_group.name
             tag_ids_in_group = request.GET.get(tag_group_name, '[]')
             tag_ids_in_group = json.loads(tag_ids_in_group)
 
             if(tag_ids_in_group and len(tag_ids_in_group) > 0):
-                clips = clips.filter(tag__in=tag_ids_in_group)    
+                clips = clips.filter(tag__in=tag_ids_in_group)
         print("millis", round(time.time() * 1000) - start)
         serializer = ClipSerializer(clips, many=True)
         return Response(serializer.data)
-    
+
 class ClipDetail(APIView):
-    def get_object(self, pk):
+    def get_object(self, pk, team):
         try:
-            return Clip.objects.get(pk=pk)
+            return Clip.objects.filter(team=team).get(pk=pk)
         except Clip.DoesNotExist:
             raise Http404
 
     def get(self, request, pk, format=None):
-        clip = self.get_object(pk)
+        active_team = get_active_team(request)
+        if active_team is None:
+            return Response("no-active-team", status=400)
+
+        clip = self.get_object(pk, active_team)
         serializer = ClipSerializer(clip)
         return Response(serializer.data)
 
 class TagGroupDetail(APIView):
-    def get_object(self, pk):
+    def get_object(self, pk, active_team):
         try:
-            return TagGroup.objects.get(pk=pk)
+            return TagGroup.objects.filter(team=active_team).get(pk=pk)
         except TagGroup.DoesNotExist:
             raise Http404
 
     def get(self, request, pk, format=None):
-        group = self.get_object(pk)
+        active_team = get_active_team(request)
+        if active_team == None:
+            return Response("no-active-team", status=400)
+
+        group = self.get_object(pk, active_team)
         serializer = TagGroupSerializer(group)
         return Response(serializer.data)
 
 class TagDetail(APIView):
-    def get_object(self, pk):
+    def get_object(self, pk, active_team):
         try:
-            return Tag.objects.get(pk=pk)
+            return Tag.objects.filter(team=active_team).get(pk=pk)
         except Tag.DoesNotExist:
             raise Http404
 
     def get(self, request, pk, format=None):
-        tag = self.get_object(pk)
+        active_team = get_active_team(request)
+        if active_team == None:
+            return Response("no-active-team", status=400)
+
+        tag = self.get_object(pk, active_team)
         serializer = TagClipSerializer(tag)
         return Response(serializer.data)
 
 class VideoList(APIView):
     def get(self, request, format=None):
-        videos = Video.objects.all()
+        active_team = get_active_team(request)
+        if active_team == None:
+            return Response("no-active-team", status=400)
+
+        videos = Video.objects.filter(team=active_team)
         serializer = VideoSerializer(videos, many=True)
         return Response(serializer.data)
 
 class VideoDetail(APIView):
     def get(self, request, pk):
-        video = Video.objects.get(pk=pk)
+        active_team = get_active_team(request)
+        if active_team == None:
+            return Response("no-active-team", status=400)
+
+        video = Video.objects.filter(team=active_team).get(pk=pk)
         serializer = VideoSerializer(video)
         return Response(serializer.data)
 
@@ -107,14 +141,22 @@ Response Format:
 """
 class ClipsByVideo(APIView):
     def get(self, request, pk):
-        clips = Clip.objects.filter(video=pk)
+        active_team = get_active_team(request)
+        if active_team == None:
+            return Response("no-active-team", status=400)
+
+        clips = Clip.objects.filter(team=active_team).filter(video=pk)
         serializer = EventSerializer(clips, many=True)
 
         return Response(serializer.data)
 
 class CommentsByVideo(APIView):
     def get(self, request, pk):
-        comments = Comment.objects.filter(video=pk)
+        active_team = get_active_team(request)
+        if active_team == None:
+            return Response("no-active-team", status=400)
+
+        comments = Comment.objects.filter(team=active_team).filter(video=pk)
         serializer = CommentSerializer(comments, many=True)
 
         return Response(serializer.data)
@@ -125,13 +167,18 @@ class CommentsByVideo(APIView):
         annotation = request.data['annotation']
         video_id = int(request.data['video_id'])
 
-        video = Video.objects.get(pk=video_id)
+        active_team = get_active_team(request)
+        if active_team == None:
+            return Response("no-active-team", status=400)
+
+        video = Video.objects.filter(team=active_team).get(pk=video_id)
 
         new_comment = Comment(
             text=text,
             timestamp=timestamp,
             annotation=annotation,
-            video=video
+            video=video,
+            team=active_team
         )
         new_comment.save()
         serializer = CommentSerializer(new_comment)
