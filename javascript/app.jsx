@@ -15,6 +15,7 @@ import Sync from './sync/sync'
 import useAuthState from './auth/auth_state_hook'
 
 import LoginPage from './auth/login_page'
+import JoinTeamPage from './auth/join_team_page'
 
 
 // The main App, shown when the User is signed in
@@ -36,7 +37,14 @@ const MainApp = () => {
 
 const App = () => {
     const authState = useAuthState()
-    return (authState.is_authenticated !== false) ? <MainApp/> : <LoginPage/>
+
+    if (authState.is_authenticated === false) {
+        return <LoginPage/>
+    } else if (authState.active_team === null) {
+        return <JoinTeamPage/>
+    } else {
+        return <MainApp/>
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {

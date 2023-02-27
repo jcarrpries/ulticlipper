@@ -6,7 +6,8 @@ from backend.auth_view import get_active_team
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from backend.models import Clip, Video, Tag, TagGroup, Comment
+from backend.models import Clip, Video, Tag, TagGroup, Comment, UserData, Team, InviteCode
+from django.contrib.auth.models import User
 from backend.serializers import ClipSerializer, EventSerializer, TagClipSerializer, TagSerializer, VideoSerializer, TagGroupSerializer, EventSerializer, CommentSerializer
 from django.conf import settings
 
@@ -189,6 +190,7 @@ class HealthCheck(APIView):
     def get(self, request):
         return Response(status.HTTP_200_OK)
 
+
 class ClearDatabase(APIView):
     # Test helper method for clearing database when testing
     def delete(self, request):
@@ -198,4 +200,9 @@ class ClearDatabase(APIView):
         Video.objects.all().delete()
         TagGroup.objects.all().delete()
         Tag.objects.all().delete()
+        User.objects.all().delete()
+        UserData.objects.all().delete()
+        Team.objects.all().delete()
+        InviteCode.objects.all().delete()
+
         return Response(status.HTTP_200_OK)

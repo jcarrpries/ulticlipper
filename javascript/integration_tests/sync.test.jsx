@@ -25,6 +25,11 @@ describe('App', () => {
       deviceScaleFactor: 1,
     });
 
+    // Log out
+    await page.evaluate(async () => {
+      fetch('/api/logout/', {method: 'GET'})
+    })
+
     // 'proxy' is substitute for 'localhost' when running containers over bridge network
     await page.goto('http://proxy')
 
@@ -37,6 +42,18 @@ describe('App', () => {
     await page.evaluate(async () => {
       fetch('/api/cleardatabase/', {method: 'DELETE'})
     })
+
+
+    await page.waitForSelector('#register-display-name')
+    await page.type("#register-display-name", 'John')
+    await page.type("#register-email", 'john@gmail.com')
+    await page.type("#register-password", 'password123')
+    await page.click("#register-button")
+
+    // Wait for load
+    await page.waitForSelector('#create-team-field')
+    await page.type("#create-team-field", 'Team A')
+    await page.click("#create-team-button")
   })
 
   it('should display "Ultimate Clipper" text on title page', async () => {
@@ -46,7 +63,7 @@ describe('App', () => {
 
     let [sync_link] = await page.$x("//a[contains(., 'Sync')]")
     await sync_link.click()
-  
+
     let title = await page.waitForSelector('.card-header-title')
     value = await title.evaluate(el => el.textContent, title)
     await expect(value).toMatch(/Synchronize clips/)
@@ -71,7 +88,7 @@ describe('App', () => {
     let results_count = await results_count_el.evaluate(el => el.textContent)
 
     await expect(results_count).toMatch(/Results: 0/)
-  
+
     // navigate to sync page
     let [sync_nav] = await page.$x('//a[contains(., "Sync")]')
     await sync_nav.click()
@@ -106,7 +123,7 @@ describe('App', () => {
     }, td_with_date_el)
     await page.waitForSelector('iframe')
     await expect(page.content()).resolves.toMatch('Synchronize clips: halves')
-    
+
     // Press continue on the 'select halves' screen
     await page.click('#continue-button')
     await page.waitForSelector('select')

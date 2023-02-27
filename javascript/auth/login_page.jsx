@@ -91,6 +91,7 @@ const RegisterForm = () => {
                             {errorMsg && <div className="notification is-danger">{errorMsg}</div>}
                             {errorMsg == false && <div className="notification is-success">Account Created</div>}
                             <input
+                                id="register-display-name"
                                 className="input"
                                 type="text"
                                 placeholder="Display Name"
@@ -98,6 +99,7 @@ const RegisterForm = () => {
                                 onChange={ev => setRegisterName(ev.target.value)}
                             />
                             <input
+                                id="register-email"
                                 className="input"
                                 type="text"
                                 placeholder="Email"
@@ -105,6 +107,7 @@ const RegisterForm = () => {
                                 onChange={ev => setRegisterEmail(ev.target.value)}
                             />
                             <input
+                                id="register-password"
                                 className="input"
                                 type="password"
                                 placeholder="Password"
@@ -114,7 +117,7 @@ const RegisterForm = () => {
                         </div>
                     </div>
                     <div className="control">
-                        <button className="button is-primary" type="submit">Register</button>
+                        <button id="register-button" className="button is-primary" type="submit">Register</button>
                     </div>
                 </form>
             </div>
@@ -125,18 +128,11 @@ const RegisterForm = () => {
 
 
 const LoginPage = () => {
-    // const handleLogout = async (e) => {
-    //     e.preventDefault();
-    //     await Auth.logout();
-    //     console.log("Logged out")
-    // }
-
     return (
         <section className="section">
             <LoginForm/>
             <RegisterForm/>
         </section>
-
     )
 }
 

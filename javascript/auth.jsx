@@ -142,6 +142,7 @@ const CreateTeamForm = () => {
         <div className="field has-addons">
             <div className="control">
                 <input
+                    id="create-team-field"
                     className="input"
                     type="text"
                     placeholder="New Team Name"
@@ -149,7 +150,7 @@ const CreateTeamForm = () => {
                     onChange={ev => {setNewTeamName(ev.target.value)}}
                 />
             </div>
-            <button className="button " disabled={newTeamName==""}>Create Team</button>
+            <button id="create-team-button" className="button " disabled={newTeamName==""}>Create Team</button>
         </div>
     </form>
 }
@@ -193,6 +194,7 @@ const JoinTeamForm= () => {
 const TeamsComponent = () => {
     return <>
         <div className="block">
+            <p>To view clips from a different team, select the team below.</p>
             <TeamsList/>
         </div>
 
@@ -205,7 +207,6 @@ const AuthView = () => {
     return (
         <section className="section">
             {/* <AuthStateView/> */}
-
 
             <FormSection title="Log Out">
                 <LogoutButton/>
@@ -223,3 +224,5 @@ const AuthView = () => {
 }
 
 export default AuthView
+
+export {JoinTeamForm, CreateTeamForm, FormSection}
