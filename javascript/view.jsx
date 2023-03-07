@@ -1,110 +1,193 @@
 import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
+import PopulationPyramid from './population-pyramid';
+import Scoreboard from './scoreboard';
+import Timeline from './game-timeline';
 
 import YoutubePlayer from './youtube-player'
 
-const JumpButtons = (props) => {
+const StatsPanel = (props) => {
     const [events, setEvents] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    const [currentTime, setCurrentTime] = useState(props.clip ? props.clip.timestamp : -1);
+    const [previousTime, setPreviousTime] = useState(props.clip ? props.clip.timestamp : -1);
+    const [stats, setStats] = useState({ theirScore: 0, ourScore: 0, theirTurnovers: 0, ourTurnovers: 0, theirOChances: 0, ourOChances: 0, theirHolds: 0, ourHolds: 0, theirBreakChances: 0, ourBreakChances: 0, theirBreaks: 0, ourBreaks: 0, period: "1st" });
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setPreviousTime(currentTime);
+
+            let theirScore = stats.theirScore;
+            let ourScore = stats.ourScore;
+            let theirTurnovers = stats.theirTurnovers;
+            let ourTurnovers = stats.ourTurnovers;
+            let theirOChances = stats.theirOChances;
+            let ourOChances = stats.ourOChances;
+            let ourHolds = stats.ourHolds;
+            let theirHolds = stats.theirHolds;
+            let theirBreakChances = stats.theirBreakChances;
+            let ourBreakChances = stats.ourBreakChances;
+            let ourBreaks = stats.ourBreaks;
+            let theirBreaks = stats.theirBreaks;
+            let period = stats.period;
+
+
+            events.forEach(event => {
+                if (event.timestamp > previousTime && event.timestamp <= currentTime) {
+                    if (event.defense && event.event_type === 'GOAL') {
+                        theirScore += 1;
+                    } else if (!event.defense && event.event_type === 'GOAL') {
+                        ourScore += 1;
+                    }
+
+                    if (!event.defense && (event.event_type === 'THROWAWAY' || event.event_type === 'DROP')) {
+                        ourTurnovers += 1;
+                    } else if (event.defense && (event.event_type === 'THROWAWAY' || event.event_type === 'D')) {
+                        theirTurnovers += 1;
+                    }
+
+                    if (event.line_type === "O" && !event.defense && event.event_type === 'GOAL') {
+                        ourHolds += 1;
+                    } else if (event.line_type === "D" && event.defense && event.event_type === 'GOAL') {
+                        theirHolds += 1;
+                    }
+
+                    // Offensive conversion rate = Number of Holds / number of times O has the opprotunity to score (Multiple times per point if there are turns)
+                    if (event.line_type === "O" && !event.defense && (event.event_type === 'THROWAWAY' || event.event_type === 'DROP' || event.event_type === 'GOAL')) {
+                        ourOChances += 1;
+                    } else if (event.line_type === "D" && event.defense && (event.event_type === 'THROWAWAY' || event.event_type === 'D' || event.event_type === 'GOAL')) {
+                        theirOChances += 1;
+                    }
+
+                    if (event.line_type === "D" && !event.defense && event.event_type === 'GOAL') {
+                        ourBreaks += 1;
+                    } else if (event.line_type === "O" && event.defense && event.event_type === 'GOAL') {
+                        theirBreaks += 1;
+                    }
+
+                    // Break Chances = Number of Breaks / number of times D has the opprotunity to score (Multiple times per point if there are turns)
+                    if (event.line_type === "D" && !event.defense && (event.event_type === 'THROWAWAY' || event.event_type === 'DROP' || event.event_type === 'GOAL')) {
+                        ourBreakChances += 1;
+                    } else if (event.line_type === "O" && event.defense && (event.event_type === 'THROWAWAY' || event.event_type === 'D' || event.event_type === 'GOAL')) {
+                        theirBreakChances += 1;
+                    }
+
+                    if (event.event_type == "ENDOFFIRSTQUARTER") {
+                        period = '2nd'
+                    } else if (event.event_type == "HALFTIME") {
+                        if (period == "1st") {
+                            period = "2nd"
+                        } else if (period == "2nd") {
+                            period = "3rd"
+                        }
+                    } else if (event.event_type == "ENDOFTHIRDQUARTER") {
+                        period = "4th"
+                    }
+                }
+            });
+
+            setStats({ theirScore, ourScore, theirTurnovers, ourTurnovers, theirOChances, ourOChances, theirHolds, ourHolds, theirBreakChances, ourBreakChances, theirBreaks, ourBreaks, period });
+            setCurrentTime(~~props.player?.getCurrentTime());
+        }, 500);
+        return () => clearInterval(interval);
+    }, [props.player, currentTime, previousTime]);
 
     useEffect(() => {
         fetch(`/api/clips_by_video/${props.clip.video.id}`)
-                .then(resp => resp.json())
-                .then(json => {
-                    hist = {}
-                    json.forEach(e => {
-                        e_type = (e.event_types).toString()
-                        hist[e_type] = (hist[e_type] || 0) + 1
-                    })
-
-                    const processed_events = json.map((e, idx) => ({
-                        defense: e.event_types.includes("D"),
-                        event_type: e.event_types.find(e => e != "D"),
-                        timestamp: e.timestamp,
-                        idx,
-                    }));
-
-                    setEvents(processed_events)
+            .then(resp => resp.json())
+            .then(json => {
+                hist = {}
+                json.forEach(e => {
+                    e_type = (e.event_types).toString()
+                    hist[e_type] = (hist[e_type] || 0) + 1
                 })
+                const processed_events = json.map((e, idx) => ({
+                    defense: e.possession_types.includes("Defense"),
+                    event_type: e.event_types[0],
+                    line_type: e.line_type,
+                    passer: e.passer,
+                    defender: e.defender,
+                    receiver: e.receiver,
+                    timestamp: e.timestamp,
+                    idx,
+                }));
+                setEvents(processed_events)
+                setLoading(false);
+                console.log(processed_events)
+
+            })
     }, [])
 
-    const notableEvents = () => events.filter(e => e.event_type != "CATCH");
-
-    // Get events representing the start of events
-    const pointStartEvents = () => {
-        const goal_events = events.filter(e => e.event_type == "GOAL")
-        goal_events.pop() // Last goal isn't followed by new point
-        const point_starts = events.length ? [events[0]] : []
-
-        goal_events.forEach(goal_event => {
-            const point_start = events[goal_event.idx + 1]
-            point_starts.push(point_start)
-        })
-
-        point_starts.forEach((e, idx) => {
-            e.point_start_number = idx + 1
-        })
-
-        return point_starts
+    function convertSecondsToTime(seconds) {
+        const h = Math.floor(seconds / 3600); // Get the number of hours
+        const m = Math.floor((seconds % 3600) / 60); // Get the number of minutes
+        const s = seconds % 60; // Get the number of seconds
+        return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
     }
 
-    // Segment list of events into quarters
-    const segmentByQuarter = (event_list) => {
-        q0_end = events.find(e => e.event_type == "ENDOFFIRSTQUARTER")?.timestamp
-        q1_end = events.find(e => e.event_type == "HALFTIME")?.timestamp
-        q2_end = events.find(e => e.event_type == "ENDOFTHIRDQUARTER")?.timestamp
-        // q3_end = events.find(e => e.event_type == "GAMEOVER")?.timestamp
+    return <>
+        {loading ? <p>loading...</p> :
 
-        quarters = [[], [], [], []]
+            <>
+                <Scoreboard homeScore={stats.ourScore} awayScore={stats.theirScore} time={convertSecondsToTime(currentTime)} period={stats.period} />
 
-        event_list.forEach(e => {
-            t = e.timestamp
-            if (q2_end && q2_end < t) {
-                quarters[3].push(e)
-            } else if (q1_end && q1_end < t) {
-                quarters[2].push(e)
-            } else if (q0_end && q0_end < t) {
-                quarters[1].push(e)
-            } else {
-                quarters[0].push(e)
-            }
-        })
+                <hr />
+                <div>
+                    <PopulationPyramid data={[
+                        { label: 'Offensive Possesions', theirPercent: stats.theirOChances == 0 ? 0 : stats.theirHolds / stats.theirOChances, ourPercent: stats.ourOChances == 0 ? 0 : stats.ourHolds / stats.ourOChances, theirText: `${stats.theirHolds}/${stats.theirOChances}`, ourText: `${stats.ourHolds}/${stats.ourOChances}` },
+                        { label: 'Break Chances', theirPercent: stats.theirBreakChances == 0 ? 0 : stats.theirBreaks / stats.theirBreakChances, ourPercent: stats.ourBreakChances == 0 ? 0 : stats.ourBreaks / stats.theirBreakChances, theirText: `${stats.theirBreaks}/${stats.theirBreakChances}`, ourText: `${stats.ourBreaks}/${stats.theirBreakChances}` },
+                        { label: 'Turnovers', theirPercent: stats.theirTurnovers, ourPercent: stats.ourTurnovers, theirText: `${stats.theirTurnovers}`, ourText: `${stats.ourTurnovers}` },
+                    ]} />
+                    <p>Previous Time: {previousTime}</p>
+                </div>
+            </>}
+    </>
+}
 
-        return quarters
-    }
+const JumpTimeline = (props) => {
+    const [events, setEvents] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+
+    useEffect(() => {
+        fetch(`/api/clips_by_video/${props.clip.video.id}`)
+            .then(resp => resp.json())
+            .then(json => {
+                hist = {}
+                json.forEach(e => {
+                    e_type = (e.event_types).toString()
+                    hist[e_type] = (hist[e_type] || 0) + 1
+                })
+                const notableEvents = json.filter(e => e.event_types[0] == "GOAL")
+
+                const processed_events = notableEvents.map(function (e, idx) {
+
+                    if (e.event_types[0] == "GOAL") {
+                        return { id: idx, timestamp: e.timestamp, icon: '🥏', our: e.possession_types.includes("Offense") }
+                    }
+
+                }
+                );
+                console.log(processed_events)
+                setLoading(false);
+                setEvents(processed_events)
+            })
+    }, [])
+
 
     const createClickHandler = timestamp => (event) => {
+        console.log(timestamp)
         props.player?.seekTo(timestamp)
     }
 
-    pointsByQuarter = segmentByQuarter(pointStartEvents())
     return <>
-        <hr/>
-        <h1>Points:</h1>
-        {pointsByQuarter.map((points, quarter_idx) => <React.Fragment key={quarter_idx}>
-            <h2>Quarter {quarter_idx+1}:</h2>
-            <div className="field has-addons">
-                {points.map(e => <button
-                    key={e.timestamp.toString() + e.event_type}
-                    onClick={createClickHandler(e.timestamp)}
-                    className={"button"}
-                    style={{color: e.defense ? "#00a" : "#a00"}}
-                >
-                    {e.point_start_number}
-                </button>)}
+        {loading ? <p>loading...</p> : <>
+            <div>
+                <h1>Goals timeline</h1>
+                <Timeline goals={events} player={props.player} />
             </div>
-        </React.Fragment>)}
-
-
-        <hr/>
-        <h1>Events:</h1>
-        {segmentByQuarter(notableEvents()).map((e_list, quarter_idx) => <React.Fragment key={quarter_idx}>
-            <h1>Quarter {quarter_idx + 1}</h1>
-            {e_list.map(e => <button
-                key={e.timestamp.toString() + e.event_type}
-                onClick={createClickHandler(e.timestamp)}>
-                    {e.event_type + (e.defense ? " (defense)" : "")}
-            </button>)}
-        </React.Fragment>)}
+        </>}
     </>
 }
 
@@ -127,14 +210,20 @@ const View = () => {
 
     return (
         <div className="card">
-            <div className="card-content">
-                { loading ? <p>loading...</p> :
-                    <>
-                        <YoutubePlayer clip={clip} setPlayer={setPlayer}/>
-                        <JumpButtons player={player} clip={clip}/>
-                    </>
-                }
-            </div>
+            {loading ? <p>loading...</p> :
+                <>
+                    <div className="card-content" style={{ display: 'flex', flexDirection: 'row' }}>
+                        <div style={{ flex: 1 }}>
+                            <YoutubePlayer clip={clip} setPlayer={setPlayer} />
+                        </div>
+                        <div style={{ flex: 1 }}>
+                            <StatsPanel player={player} clip={clip} />
+                        </div>
+                    </div>
+
+                    <JumpTimeline player={player} clip={clip} />
+                </>
+            }
 
             <h1>Clip:</h1>
             <div className="block">

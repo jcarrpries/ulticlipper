@@ -44,19 +44,65 @@ class EventNameSerializer(serializers.ModelSerializer):
 
 class EventSerializer(serializers.ModelSerializer):
     event_types = serializers.SerializerMethodField()
+    possession_types = serializers.SerializerMethodField()
+    line_type = serializers.SerializerMethodField()
+    passer = serializers.SerializerMethodField()
+    receiver = serializers.SerializerMethodField()
+    defender = serializers.SerializerMethodField()
 
     def get_event_types(self, clip):
         # Filter tags that belong to Tag Group Event
         event_tags = clip.tag_set.filter(group__name="event_type") # All event_type tags
-
         serializer = EventNameSerializer(event_tags, many=True)
 
         events = serializer.data
         return [event["name"] for event in events]
 
+    def get_line_type(self, clip):
+        # Filter tags that belong to Tag Group Event
+        line_tags = clip.tag_set.filter(group__name="line_type") # All possession_type tags
+        if len(line_tags) > 0:
+            serializer = TagSerializer(line_tags, many=True)
+            return serializer.data[0]["name"]
+        else:
+            return None
+
+    def get_possession_types(self, clip):
+        # Filter tags that belong to Tag Group Event
+        possession_tags = clip.tag_set.filter(group__name="possession_type") # All possession_type tags
+
+        if len(possession_tags) > 0:
+            serializer = TagSerializer(possession_tags, many=True)
+            return serializer.data[0]["name"]
+        else:
+            return None
+    
+    def get_passer(self, clip):
+        passer_tags = clip.tag_set.filter(group__name="passer")
+        if len(passer_tags) > 0:
+            serializer = TagSerializer(passer_tags, many=True)
+            return serializer.data[0]["name"]
+        else:
+            return None
+
+    def get_receiver(self, clip):
+        receiver_tags = clip.tag_set.filter(group__name="receiver")
+        if len(receiver_tags) > 0:
+            serializer = TagSerializer(receiver_tags, many=True)
+            return serializer.data[0]["name"]
+        else:
+            return None
+    def get_defender(self, clip):
+        defender_tags = clip.tag_set.filter(group__name="defender")
+        if len(defender_tags) > 0:
+            serializer = TagSerializer(defender_tags, many=True)
+            return serializer.data[0]["name"]
+        else:
+            return None
     class Meta:
         model = Clip
-        fields = ["timestamp", "event_types"]
+        fields = ["timestamp", "event_types", "possession_types", "line_type", "passer", "receiver", "defender"]
+
 
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:

@@ -53,6 +53,7 @@ def get_game_objects(game_data: pd.DataFrame) -> Game:
             .translate(str.maketrans("", "", string.punctuation))
             .upper()
         ]
+        possession_type = "NoPossession" if "Cessation" in row["Event Type"] else row["Event Type"]
         line_type = LineType[row["Line"]]
         players_on = []
         for x in range(28):
@@ -62,7 +63,7 @@ def get_game_objects(game_data: pd.DataFrame) -> Game:
         event_start_elapsed = int(row["Elapsed Time (secs)"])
         event_start_datetime = datetime_of_game + timedelta(seconds=event_start_elapsed)
         passer = row["Passer"] if pd.notnull(row["Passer"]) else None
-        reciever = row["Receiver"] if pd.notnull(row["Receiver"]) else None
+        receiver = row["Receiver"] if pd.notnull(row["Receiver"]) else None
         defender = row["Defender"] if pd.notnull(row["Defender"]) else None
         hang_time = float(row["Hang Time (secs)"]) if pd.notnull(row["Hang Time (secs)"]) else None
 
@@ -76,10 +77,11 @@ def get_game_objects(game_data: pd.DataFrame) -> Game:
                 event_start_elapsed=event_start_elapsed,
                 players_on=players_on,
                 line_type=line_type,
+                possession_type=possession_type,
                 our_score=row["Our Score - End of Point"],
                 their_score=row["Their Score - End of Point"],
                 passer=passer,
-                reciever=reciever,
+                receiver=receiver,
                 defender=defender,
                 hang_time=hang_time,
             )

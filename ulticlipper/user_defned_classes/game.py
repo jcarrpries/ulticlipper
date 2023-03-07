@@ -30,4 +30,4 @@ class Game:
         self.events=events
     
     def __str__(self) -> str:
-        return f"{self.event_type}: {self.passer} {self.reciever} {self.defender}"
+        return f"vs {self.opponent} at {self.tournament} on {self.datetime_of_first_pull}"
