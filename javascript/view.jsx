@@ -139,7 +139,8 @@ const StatsPanel = (props) => {
                         { label: 'Break Chances', theirPercent: stats.theirBreakChances == 0 ? 0 : stats.theirBreaks / stats.theirBreakChances, ourPercent: stats.ourBreakChances == 0 ? 0 : stats.ourBreaks / stats.theirBreakChances, theirText: `${stats.theirBreaks}/${stats.theirBreakChances}`, ourText: `${stats.ourBreaks}/${stats.theirBreakChances}` },
                         { label: 'Turnovers', theirPercent: stats.theirTurnovers, ourPercent: stats.ourTurnovers, theirText: `${stats.theirTurnovers}`, ourText: `${stats.ourTurnovers}` },
                     ]} />
-                    <p>Previous Time: {previousTime}</p>
+                    {/* <p>Previous Time: {previousTime}</p> */}
+                    <JumpTimeline player={props.player} clip={props.clip} />
                 </div>
             </>}
     </>
@@ -147,7 +148,6 @@ const StatsPanel = (props) => {
 
 const JumpTimeline = (props) => {
     const [events, setEvents] = useState([]);
-    const [loading, setLoading] = useState(true);
 
 
     useEffect(() => {
@@ -170,7 +170,6 @@ const JumpTimeline = (props) => {
                 }
                 );
                 console.log(processed_events)
-                setLoading(false);
                 setEvents(processed_events)
             })
     }, [])
@@ -182,12 +181,9 @@ const JumpTimeline = (props) => {
     }
 
     return <>
-        {loading ? <p>loading...</p> : <>
-            <div>
-                <h1>Goals timeline</h1>
-                <Timeline goals={events} player={props.player} />
-            </div>
-        </>}
+        <div>
+            <Timeline goals={events} player={props.player} />
+        </div>
     </>
 }
 
@@ -221,7 +217,6 @@ const View = () => {
                         </div>
                     </div>
 
-                    <JumpTimeline player={player} clip={clip} />
                 </>
             }
 
