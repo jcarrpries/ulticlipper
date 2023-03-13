@@ -136,7 +136,8 @@ Get clips within a video that a user might want to "Jump" to
 Response Format:
 [{
     "timestamp": 304,
-    "event_types": [ "CATCH", "D"]
+    "event_types": [ "CATCH", "D"],
+    "possession_type": "Offense"
 }, ...]
 
 """
@@ -148,7 +149,6 @@ class ClipsByVideo(APIView):
 
         clips = Clip.objects.filter(team=active_team).filter(video=pk)
         serializer = EventSerializer(clips, many=True)
-
         return Response(serializer.data)
 
 class CommentsByVideo(APIView):

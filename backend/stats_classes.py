@@ -52,7 +52,6 @@ class Player:
             and self.team == other.team
         )
 
-
 class LineType(Enum):
     O = 1
     D = 2
@@ -92,10 +91,11 @@ class Event:
         event_start_elapsed: int,
         players_on: list[Player],
         line_type: LineType,
+        possession_type: str,
         our_score: int,
         their_score: int,
         passer: Player = None,
-        reciever: Player = None,
+        receiver: Player = None,
         defender: Player = None,
         hang_time: float = None,
 
@@ -106,24 +106,26 @@ class Event:
         self.datetime_game=datetime_game
         self.event_type = event_type
         self.line_type = line_type
+        self.possession_type = possession_type
         self.their_score = their_score
         self.our_score = our_score
         self.event_start_datetime = event_start_datetime
         self.event_start_elapsed = event_start_elapsed
         self.players_on = players_on
         self.passer = passer
-        self.reciever = reciever
+        self.receiver = receiver
         self.defender = defender
         self.hang_time = hang_time
 
     def __str__(self) -> str:
-        return f"{self.event_type}: {self.passer} {self.reciever} {self.defender}"
+        return f"{self.event_type}: {self.passer} {self.receiver} {self.defender}"
 
     def serialize(self):
         ret = vars(self)
         ret['players_on'] = [player.nickname for player in self.players_on]
         ret['event_type'] = str(self.event_type.name)
         ret['line_type'] = str(self.line_type.name)
+        ret['possession_type'] = self.possession_type
         del ret['event_start_datetime']
         return ret
 
@@ -154,4 +156,4 @@ class Game:
         self.events=events
     
     def __str__(self) -> str:
-        return f"{self.event_type}: {self.passer} {self.reciever} {self.defender}"
+        return f"{self.event_type}: {self.passer} {self.receiver} {self.defender}"
