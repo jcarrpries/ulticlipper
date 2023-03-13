@@ -61,10 +61,34 @@ const RegisterForm = () => {
 
     const [errorMsg, setErrorMsg] = useState(null);
 
+    const validateEmail = (email) => {
+        return String(email)
+          .toLowerCase()
+          .match(
+            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+          );
+      };
+
+
     const handleCreateUser = async (e) => {
-        // createuser/<str:username>/<str:new_password>/
         e.preventDefault();
+
+
+        // client-side validation
+        if (registerPassword.length < 8) {
+            setErrorMsg("Password must be at least 8 characters long.")
+            return;
+        }
+        if (!validateEmail(registerEmail)) {
+            setErrorMsg("Email is invalid.");
+            return;
+        }
+
+
+        // send request
         const outcome = await Auth.register(registerEmail, registerPassword, registerName);
+
+        // handle server-side valiation
         if (outcome.error == "empty-field") {
             setErrorMsg("All fields are required.")
         }

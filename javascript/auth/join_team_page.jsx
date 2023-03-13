@@ -7,8 +7,10 @@ const JoinTeamPage = () => {
     return (
         <section className="section">
             <FormSection title="Join or Create a Team to Continue">
-                <CreateTeamForm/>
+                <label>Join a team with the invite code:</label>
                 <JoinTeamForm/>
+                <label>Or, create your own team:</label>
+                <CreateTeamForm/>
             </FormSection>
         </section>
 

@@ -47,6 +47,7 @@ const ChangeNameForm = () => {
         const success = await Auth.changeDisplayName(newName)
         if (success) {
             setActionState("success")
+            setNewName("")
         } else {
             setActionState("none")
         }
@@ -55,7 +56,7 @@ const ChangeNameForm = () => {
     const buttonClasses = "button is-primary" + (actionState === "loading" ? " is-loading" : "")
 
     return <form onSubmit={handleSubmit}>
-        <label>Display Name: {name}</label>
+        <label>Your Name: {name}</label>
         <div className="field has-addons">
             <div className="control">
                 <input
@@ -198,8 +199,10 @@ const TeamsComponent = () => {
             <TeamsList/>
         </div>
 
-        <CreateTeamForm/>
+        <label>Join a team with the invite code:</label>
         <JoinTeamForm/>
+        <label>Or, create your own team:</label>
+        <CreateTeamForm/>
     </>
 }
 
@@ -207,17 +210,16 @@ const AuthView = () => {
     return (
         <section className="section">
             {/* <AuthStateView/> */}
-
-            <FormSection title="Log Out">
-                <LogoutButton/>
-            </FormSection>
-
-            <FormSection title="Display Name">
+            <FormSection title="Profile">
                 <ChangeNameForm/>
             </FormSection>
 
             <FormSection title="Teams">
                 <TeamsComponent/>
+            </FormSection>
+
+            <FormSection title="Log Out">
+                <LogoutButton/>
             </FormSection>
         </section>
     )
