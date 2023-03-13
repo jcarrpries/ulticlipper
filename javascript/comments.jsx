@@ -1,46 +1,29 @@
-import React, { useState, useEffect, useRef } from 'react'
-import { useParams } from 'react-router-dom'
-import optimize from 'svgo-browser/lib/optimize';
+import React, { useState, useEffect, useRef, forwardRef } from 'react'
+import optimize from 'svgo-browser/lib/optimize'
 import { getCsrfToken } from './auth/auth_manager'
-
-import YoutubePlayer from './youtube-player'
 import fmtSeconds from './util'
 import * as c2s from './canvas2svg'
 
 var currX, currY, prevY, prevX = 0;
 var flag, dotFlag = false;
 
-const comments_fixture = [
-    {
-        text: "This is a comment with an annotation",
-        timestamp: 42,
-        annotation: "test"
-    },
-    {
-        text: "This is a comment",
-        timestamp: 1770,
-        annotation: null
-    },
-];
+const CommentSection = forwardRef((props, canvasRef) => {
+    const player = props.player;
+    const videoId = props.videoId;
+    const viewedNote = props.viewedNote;
+    const annotating = props.annotating;
+    const setAnnotating = props.setAnnotating;
+    const setViewedNote = props.setViewedNote;
 
-const DrawDemo = () => {
-    const [videoId, setVideoId] = useState(0);
-
-    const [loading, setLoading] = useState(true);
-    const [video, setVideo] = useState({});
-    const [annotating, setAnnotating] = useState(false);
     const [comments, setComments] = useState([]);
-    const [player, setPlayer] = useState(null);
     const [curTime, setCurTime] = useState(0);
-    const [viewedNote, setViewedNote] = useState('');
 
     const commentTextRef = useRef(null);
 
-    const canvasRef = useRef(null);
     const c2sCtxRef = useRef(null);
 
-    let fetchComments = (tempVideoId) => {
-        fetch(`/api/comments/${tempVideoId}`).then((resp) => {
+    let fetchComments = () => {
+        fetch(`/api/comments/${videoId}`).then((resp) => {
             return resp.json();
         }).then((json) => {
             setComments(json);
@@ -48,23 +31,7 @@ const DrawDemo = () => {
     }
  
     useEffect(() => {
-        fetch('/api/videos').then((resp) => {
-            return resp.json();
-        }).then((json) => {
-            tempVideoId = json[0].id;
-            setVideoId(tempVideoId);
-            return tempVideoId;
-        }).then((tempVideoId) => {
-            fetch(`/api/video/${tempVideoId}`).then((resp) => {
-                return resp.json();
-            }).then((json) => {
-                setVideo(json);
-                setLoading(false);
-            })
-    
-            fetchComments(tempVideoId);
-        });
-
+        fetchComments();
     }, []);
 
     let draw_on_canvas = (ctx1, ctx2) => {
@@ -223,8 +190,6 @@ const DrawDemo = () => {
         data.append('annotation', annotation);
         data.append('video_id', videoId);
 
-        console.log('video id:', videoId)
-
         fetch('/api/comments/' + videoId + '/', {
             'method': 'POST',
             'body': data,
@@ -235,99 +200,59 @@ const DrawDemo = () => {
             console.log(resp)
             return resp.json()
         }).then((json) => {
-            fetchComments(videoId);
+            fetchComments();
             commentTextRef.current.value = '';
         })
     }
 
     return (
-        <div className="card">
-            <div className="card-content">
-                <div className="columns">
-                    <div className="column">
-                        <div style={{ position: "relative", display: "table" }}>
-                            {loading ? <p>loading...</p> :
-                                <YoutubePlayer video={video} setPlayer={setPlayer}/>
-                            }
-                            {annotating &&
-                                <canvas ref={canvasRef} id="canv" style={{
-                                    border: "3px solid red",
-                                    position: "absolute",
-                                    top: 0,
-                                    left: 0,
-                                    height: "100%",
-                                    width: "100%"
-                                }}></canvas>
-                            }
-                            {(!annotating && viewedNote != '') &&
-                                <img onClick={() => {
-                                    setViewedNote('');
-                                    if (player != null) {
-                                        player.playVideo();
-                                    }
-                                }}
-                                style={{
-                                    border: "3px solid red",
-                                    position: "absolute",
-                                    top: 0,
-                                    left: 0,
-                                    height: "100%",
-                                    width: "100%"
-                                }}
-                                src={`data:image/svg+xml;utf8,${encodeURIComponent(viewedNote)}`}/>
-                            }
-                        </div>
-                    </div>
-                    <div className="column">
-                        <div className="card">
-                            <div className="card-header">
-                                <div className="card-header-title">Leave a comment</div>
-                            </div>
-                            <div className="card-content">
-                                <textarea className="textarea" placeholder="Nice play!" ref={commentTextRef}></textarea>
-                            </div>
-                            <div className="card-content">
-                                <div className="buttons">
-                                    {!annotating ?
-                                        <button className="button" onClick={toggleAnnotating}>Annotate</button>
-                                        :
-                                        <>
-                                            <button className="button is-danger" onClick={toggleAnnotating}>Clear</button>
-                                            <button className="button is-info" onClick={saveAnnotation}>Save</button>
-                                        </>
-                                    }
-                                    <button className="button" onClick={postComment}>Post @ {fmtSeconds(curTime)}</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="card">
-                            <div className="card-header">
-                                <div className="card-header-title">Comments</div>
-                            </div>
-                            {comments.map((comment, idx) => {
-                                return (
-                                    <div className="card-content" key={idx}>
-                                        <div className="columns">
-                                            <div className="column is-one-fifth">
-                                                <div className="button is-small"
-                                                    onClick={() => showComment(comment)}
-                                                >
-                                                    {fmtSeconds(comment.timestamp) + (comment.annotation ? ' ✏️' : '')}
-                                                </div>
-                                            </div>
-                                            <div className="column">
-                                                {comment.text}
-                                            </div>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
+        <>
+            <div className="card">
+                <div className="card-header">
+                    <div className="card-header-title">Leave a comment</div>
+                </div>
+                <div className="card-content">
+                    <textarea className="textarea" placeholder="Nice play!" ref={commentTextRef}></textarea>
+                </div>
+                <div className="card-content">
+                    <div className="buttons">
+                        {!annotating ?
+                            <button className="button" onClick={toggleAnnotating}>Annotate</button>
+                            :
+                            <>
+                                <button className="button is-danger" onClick={toggleAnnotating}>Clear</button>
+                                {/* <button className="button is-info" onClick={saveAnnotation}>Save</button> */}
+                            </>
+                        }
+                        <button className="button" onClick={postComment}>Post @ {fmtSeconds(curTime)}</button>
                     </div>
                 </div>
             </div>
-        </div>
+            <div className="card">
+                <div className="card-header">
+                    <div className="card-header-title">Comments</div>
+                </div>
+                {comments.map((comment, idx) => {
+                    return (
+                        <div className="card-content" key={idx}>
+                            <div className="columns">
+                                <div className="column is-one-fifth">
+                                    <div className="button is-small"
+                                        onClick={() => showComment(comment)}
+                                    >
+                                        {fmtSeconds(comment.timestamp) + (comment.annotation ? ' ✏️' : '')}
+                                    </div>
+                                </div>
+                                <div className="column">
+                                    {comment.text}
+                                </div>
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+        </>
     )
-}
+});
 
-export default DrawDemo
+export default CommentSection
