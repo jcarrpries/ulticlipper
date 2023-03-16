@@ -120,6 +120,15 @@ class ClipDetail(APIView):
         serializer = ClipSerializer(clip)
         return Response(serializer.data)
 
+    def delete(self, request, pk, format=None):
+        active_team = get_active_team(request)
+        if active_team is None:
+            return Response("no-active-team", status=400)
+
+        clip = self.get_object(pk, active_team)
+        clip.delete()
+        return Response("Clip deleted successfully", status=204)
+
 class TagGroupDetail(APIView):
     def get_object(self, pk, active_team):
         try:
