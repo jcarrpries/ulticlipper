@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import Select from 'react-select';
+import { getCsrfToken } from './auth/auth_manager';
 
 
 const Search = () => {
@@ -50,10 +51,24 @@ const Search = () => {
         })
     }
 
+	const deleteClip = (clipId, clipIdx) => {
+		fetch(`/api/clips/${clipId}`, {
+			method: "DELETE",
+			headers: {
+				"Content-Type": "application/json",
+				'X-CSRFToken': getCsrfToken(),
+			},
+		}).then(() => {
+			const clipsCopy = [...clips]
+			clipsCopy.splice(clipIdx, 1)
+			setClips(clipsCopy)
+		})
+	}
+
+
     // Function triggered on selection
     function handleSelect(data, item) {
         selectedOptions[item] = data
-        console.log(selectedOptions)
         setSelectedOptions(selectedOptions);
     }
 
@@ -62,13 +77,13 @@ const Search = () => {
         fetch('/api/tag_groups').then((resp) => {
             return resp.json()
         }).then((json) => {
-            // console.log('tag groups:', json)
             setTagGroups(json)
         })
     }, [])
 
     return (
         <section className="section">
+			<Link to='/clip/create'><button className='button is-primary'>Create Clip</button></Link>
             <div className="card">
                 <header className="card-header">
                     <div className="card-header-title">Search for clips</div>
@@ -126,7 +141,7 @@ const Search = () => {
                 </div>
             }
             {
-                clips.map((clip) => {
+                clips.map((clip, idx) => {
                     return (
                         <div key={'clip-' + clip.id}>
                             <div className="block"></div>
@@ -137,6 +152,7 @@ const Search = () => {
                                 <div className="card-content">
                                     <div className="block">
                                         <Link to={"/clip/" + clip.id}><img src={"//img.youtube.com/vi/" + clip.video.youtube_id + "/0.jpg"} width="200" height="100" /></Link>
+										<button className="button is-light is-pulled-right mr-1" id="delete-button" onClick={() => deleteClip(clip.id, idx)}>Delete</button>
                                     </div>
                                     {/* <pre><code>{JSON.stringify(clip, null, 2)}</code></pre> */}
                                 </div>

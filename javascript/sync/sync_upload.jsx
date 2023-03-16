@@ -36,7 +36,8 @@ const SyncUpload = (props) => {
 
     // LOAD DEFAULT FORM VALUE - FOR TESTING ONLY
     useEffect(() => {
-        fetch('/static/test_data/RaleighFlyers2019-stats.csv').then((resp) => {
+        // fetch('/static/test_data/RaleighFlyers2019-stats.csv').then((resp) => {
+        fetch('/static/test_data/Mixtape-stats.csv').then((resp) => {
             return resp.text()
         }).then((text) => {
             let file = new File([text], 'testimport.csv')
@@ -44,7 +45,8 @@ const SyncUpload = (props) => {
             dataTransfer.items.add(file)
             fileInputRef.current.files = dataTransfer.files
 
-            urlInputRef.current.value = 'https://www.youtube.com/watch?v=B_RPq7Gh_20'
+            // urlInputRef.current.value = 'https://www.youtube.com/watch?v=B_RPq7Gh_20' // raleigh flyers 2019
+            urlInputRef.current.value = 'https://www.youtube.com/watch?v=G3B_eWTQeSA' // mixtape
         })
     }, [])
 

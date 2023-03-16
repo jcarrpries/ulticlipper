@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import PopulationPyramid from './population-pyramid';
 import Scoreboard from './scoreboard';
 import Timeline from './game-timeline';
+import CommentSection from './comments';
 
 import YoutubePlayer from './youtube-player'
 
@@ -195,6 +196,9 @@ const View = () => {
 
     const [player, setPlayer] = useState(null);
 
+    const [viewedNote, setViewedNote] = useState('');
+    const [annotating, setAnnotating] = useState(false);
+
     useEffect(() => {
         fetch(`/api/clips/${clipId}`).then((resp) => {
             return resp.json();
@@ -204,20 +208,61 @@ const View = () => {
         })
     }, []);
 
+    useEffect(() => {
+        if (player != null) {
+            console.log(player.h.width)
+        }
+    }, [player])
+
+    const canvasRef = useRef(null);
+
     return (
         <div className="card">
             {loading ? <p>loading...</p> :
-                <>
-                    <div className="card-content" style={{ display: 'flex', flexDirection: 'row' }}>
-                        <div style={{ flex: 1 }}>
-                            <YoutubePlayer clip={clip} setPlayer={setPlayer} />
+                // <div className="card-content" style={{ display: 'flex', flexDirection: 'row' }}>
+                <div className="card-content">
+                    <div className="columns">
+                        <div className="column">
+                            <div style={{ position: "relative", display: "table"}}>
+                                <YoutubePlayer clip={clip} setPlayer={setPlayer}/>
+                                {annotating &&
+                                    <canvas ref={canvasRef} id="canv" style={{
+                                        border: "3px solid red",
+                                        position: "absolute",
+                                        top: 0,
+                                        left: 0,
+                                        height: "100%",
+                                        width: "100%"
+                                    }}></canvas>
+                                }
+                                {(!annotating && viewedNote != '') &&
+                                    <img onClick={() => {
+                                        setViewedNote('');
+                                        if (player != null) {
+                                            player.playVideo();
+                                        }
+                                    }}
+                                        style={{
+                                            border: "3px solid red",
+                                            position: "absolute",
+                                            top: 0,
+                                            left: 0,
+                                            height: "100%",
+                                            width: "100%"
+                                        }}
+                                        src={`data:image/svg+xml;utf8,${encodeURIComponent(viewedNote)}`} />
+                                }
+                            </div>
+                            <div style={{width: player == null ? "640" : player.h.width}}>
+                                <CommentSection ref={canvasRef} player={player} videoId={clip.video.id} annotating={annotating}
+                                    viewedNote={viewedNote} setAnnotating={setAnnotating} setViewedNote={setViewedNote} />
+                            </div>
                         </div>
-                        <div style={{ flex: 1 }}>
+                        <div className="column">
                             <StatsPanel player={player} clip={clip} />
                         </div>
                     </div>
-
-                </>
+                </div>
             }
 
             <h1>Clip:</h1>
