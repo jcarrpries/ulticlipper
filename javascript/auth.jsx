@@ -3,6 +3,10 @@ import React, { useState } from 'react'
 import Auth from './auth/auth_manager'
 import useAuthState from './auth/auth_state_hook.jsx'
 
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
+library.add(faPlus, faMinus);
 
 // Just a Card in a form
 const FormSection = (props) => {
@@ -23,7 +27,7 @@ const FormSection = (props) => {
 const LogoutButton = () => {
     const [actionState, setActionState] = useState("none") // "none", "loading", or "success"
 
-    const buttonClasses = "button is-primary" + (actionState === "loading" ? " is-loading" : "")
+    const buttonClasses = "button is-danger is-outlined" + (actionState === "loading" ? " is-loading" : "")
 
     const handleLogout = async (e) => {
         e.preventDefault();
@@ -62,7 +66,7 @@ const ChangeNameForm = () => {
                 <input
                     className="input"
                     type="text"
-                    placeholder=""
+                    placeholder={name}
                     value={newName}
                     onChange={ev => setNewName(ev.target.value)}
                 />
@@ -92,44 +96,80 @@ const TeamItem = (props) => {
         Auth.selectTeam(team_id)
     }
 
-    const selectedButton = <button className="button is-primary" disabled={true}>Selected</button>
-    const selectButton = <button className="button is-primary is-outlined" onClick={handleSelectTeam}>Select Team</button>
+    const radioBox = (
+        <div className="control">
+          <label className="radio">
+            <input
+              style={{marginRight: "10px", transform: "scale(1.5)"}}
+              type="radio"
+              name="team"
+              checked={team_id === active_team}
+              onChange={handleSelectTeam}
+            />
+            {team_name} ({member_names?.join(', ')})
+            {team_id === active_team && (
+              <span className="has-text-grey is-size-7 pl-2">
+                --- Selected - Currently displaying clips and data from this team.
+              </span>
+            )}
+          </label>
+        </div>
+      );
 
-    return <div className="card">
+
+    return <div className="card" onClick={handleSelectTeam}>
         <div className="card-content">
             <div className="field is-horizontal">
                 <div>
-                    <h1>{team_name}</h1>
-                    {member_names?.join(', ')}
+                    {radioBox}
                 </div>
             </div>
             <div>
-                    {(team_id == active_team) ? selectedButton : selectButton}
-                    <button className="button is-secondary" onClick={handleAddPlayer}>Add Player</button>
-                    <button className="button is-danger is-outlined" onClick={handleLeaveTeam}>Leave Team</button>
+                <button className="button is-secondary" onClick={handleAddPlayer}>
+                    <FontAwesomeIcon icon="fa-solid fa-plus" />  Invite Player
+                </button>
+                <button className="button is-danger is-outlined" onClick={handleLeaveTeam}>
+                    <FontAwesomeIcon icon="fa-solid fa-minus" />  Leave Team
+                </button>
 
-                    {inviteCode &&
-                        <div className="notification is-info is-light">
-                            Invite Code: <strong>{inviteCode}</strong>.
-                            <p>Share this code with another player to invite them to the team.</p>
-                        </div>
-                    }
-                </div>
+                {inviteCode &&
+                    <div className="notification is-info is-light">
+                        Invite Code: <strong>{inviteCode}</strong>.
+                        <p>Share this code with another player to invite them to the team.</p>
+                    </div>
+                }
+            </div>
         </div>
     </div>
-
 }
 
 const TeamsList = () => {
     authState = useAuthState();
-    return authState.teams?.map(team => <TeamItem
-        key={team.id}
-        team_id={team.id}
-        team_name={team.name}
-        member_names={team.users?.map(u => u.display_name)}
-        active_team={authState.active_team}
-    />)
+
+    const handleSelectTeam = (ev) => {
+        Auth.selectTeam(ev.target.value)
+    }
+
+    return (
+        <div className="field">
+            {authState.teams?.map(team => (
+                <TeamItem
+                    key={team.id}
+                    team_id={team.id}
+                    team_name={team.name}
+                    member_names={team.users?.map(u => u.display_name)}
+                    active_team={authState.active_team}
+                />
+            ))}
+        </div>
+    )
 }
+
+
+
+
+
+
 
 const CreateTeamForm = () => {
     const [newTeamName, setNewTeamName] = useState("")
@@ -195,10 +235,12 @@ const JoinTeamForm= () => {
 const TeamsComponent = () => {
     return <>
         <div className="block">
-            <p>To view clips from a different team, select the team below.</p>
+            {/* <p>Select an active team below to view its data throughout Ulticlipper</p> */}
+            <h2 className="title is-5">Select Team:</h2>
             <TeamsList/>
         </div>
 
+        <h2 className="title is-5">Add Team:</h2>
         <label>Join a team with the invite code:</label>
         <JoinTeamForm/>
         <label>Or, create your own team:</label>
@@ -210,16 +252,13 @@ const AuthView = () => {
     return (
         <section className="section">
             {/* <AuthStateView/> */}
-            <FormSection title="Profile">
+            <FormSection title="Account">
                 <ChangeNameForm/>
-            </FormSection>
-
-            <FormSection title="Teams">
-                <TeamsComponent/>
-            </FormSection>
-
-            <FormSection title="Log Out">
                 <LogoutButton/>
+            </FormSection>
+
+            <FormSection title="Your Teams">
+                <TeamsComponent/>
             </FormSection>
         </section>
     )
