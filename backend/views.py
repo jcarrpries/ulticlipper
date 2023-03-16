@@ -39,6 +39,21 @@ class TagList(APIView):
         tags = Tag.objects.filter(team=active_team)
         serializer = TagSerializer(tags, many=True)
         return Response(serializer.data)
+    
+    def post(self, request, format=None):
+        active_team = get_active_team(request)
+        if active_team == None:
+            return Response("no-active-team", status=400)
+
+        name = request.data["name"]
+        group_id = request.data["group_id"]
+
+        group = TagGroup.objects.get(pk=group_id)
+        new_tag = Tag(name=name, group=group, team=active_team)
+        new_tag.save()
+        serializer = TagSerializer(new_tag)
+        return Response(serializer.data)
+
 
 class ClipList(APIView):
     def get(self, request, format=None):
@@ -61,6 +76,33 @@ class ClipList(APIView):
         print("millis", round(time.time() * 1000) - start)
         serializer = ClipSerializer(clips, many=True)
         return Response(serializer.data)
+
+    def post(self, request, format=None):
+        active_team = get_active_team(request)
+        
+        if active_team is None:
+            return Response("no-active-team", status=400)
+        
+        video = Video.objects.filter(team=active_team).get(pk=request.data['video_id'])
+        tag_ids = request.data['tag_ids']
+
+        if video is None:
+            return Response("no-video", status=400)
+        new_clip = Clip(
+            timestamp=request.data['timestamp'],
+            duration=request.data['duration'],
+            video=video,
+            team=active_team
+        )
+
+        new_clip.save()
+        if len(tag_ids) > 0:
+            new_clip.tag_set.add(*tag_ids) 
+            new_clip.save()
+        
+        serializer = ClipSerializer(new_clip)
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class ClipDetail(APIView):
     def get_object(self, pk, team):
