@@ -17,6 +17,8 @@ import useAuthState from './auth/auth_state_hook'
 import LoginPage from './auth/login_page'
 import JoinTeamPage from './auth/join_team_page'
 
+import ClipCreate from './clipcreate'
+
 
 // The main App, shown when the User is signed in
 const MainApp = () => {
@@ -29,6 +31,7 @@ const MainApp = () => {
             <Route path="/clip/:clipId" element={<View />} />
             <Route path="/tagsearch" element={<TagSearch />} />
             <Route path="/drawdemo" element={<DrawDemo />} />
+            <Route path="/clip/create" element={<ClipCreate />} />
             <Route path="/auth" element={<Auth />} />
         </Routes>
     </BrowserRouter>
