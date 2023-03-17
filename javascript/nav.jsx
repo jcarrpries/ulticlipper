@@ -1,5 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
+
+import ProfileIcon from './auth/profile-icon';
 
 const Nav = () => {
     return (
@@ -12,9 +14,8 @@ const Nav = () => {
                 {/* <Link to="/testimport" className="navbar-item">TestImport</Link> */}
                 <Link to="/search" className="navbar-item" id="search-nav-item">Search</Link>
                 <Link to="/tagsearch" className="navbar-item">TagSearch</Link>
-                {/* <Link to="/drawdemo" className="navbar-item">DrawDemo</Link> */}
-                <Link to="/auth" className="navbar-item">Teams and Profile</Link>
             </div>
+            <ProfileIcon/>
         </div>
     )
 }
