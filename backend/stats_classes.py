@@ -81,6 +81,7 @@ class EventType(Enum):
 
 
 class Event:
+    NUMERIC_FIELDS = ['their_score', 'our_score', 'hang_time']
     def __init__(
         self,
         event_type: EventType,

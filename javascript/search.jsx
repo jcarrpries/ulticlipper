@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import Select from 'react-select';
 import { getCsrfToken } from './auth/auth_manager';
-
+import RangeInput from './common/rangeinput';
 
 const Search = () => {
     let [clips, setClips] = useState([])
     let [tagGroups, setTagGroups] = useState([])
     let [tags, setTags] = useState([])
     let [selectedOptions, setSelectedOptions] = useState({});
+	let [selectedRanges, setSelectedRanges] = useState({});
     let [gotResults, setGotResults] = useState(false)
     let [searchLoading, setSearchLoading] = useState(false)
 
@@ -32,11 +33,13 @@ const Search = () => {
 
         }
 
+		for ([group, range] of Object.entries(selectedRanges)) {
+			query += `${group}[min]=${range.min}&${group}[max]=${range.max}&`
+		}
+
         if (query[query.length - 1] == "&") {
             query = query.substring(0, query.length - 1)
         }
-
-        // console.log('/api/clips/?' + query)
 
         setClips([])
         setGotResults(false)
@@ -68,9 +71,12 @@ const Search = () => {
 
     // Function triggered on selection
     function handleSelect(data, item) {
-        selectedOptions[item] = data
-        setSelectedOptions(selectedOptions);
+        setSelectedOptions({...selectedOptions, [item]: data});
     }
+
+	const handleRangeChange = (name, data) => {
+		setSelectedRanges({...selectedRanges, [name]: data})
+	}
 
     // use useEffect to run this code once when the component loads
     useEffect(() => {
@@ -93,10 +99,11 @@ const Search = () => {
                         <form onSubmit={searchRequest}>
                             <div className="search-menu">
                                 {tagGroups.map((group, idx) => {
+									if (group.type == 'numeric') {
+										return <RangeInput key={idx} name={group.name} handleChange={handleRangeChange}/>
+									}
                                     return (
-                                        <div style={{ width: '550px'}}>
-                                            {/* <div className="card-header-title">{group.name}</div> */}
-
+                                        <div style={{ width: '550px'}} key={idx}>
                                             <Select
                                                 options={group.tags.map((entry) => {
                                                     return { "value": entry.id, "label": entry.name }
@@ -111,8 +118,6 @@ const Search = () => {
                                                 classNamePrefix="search-menu"
                                             />
                                         </div>
-
-
                                     )
                                 })}
 

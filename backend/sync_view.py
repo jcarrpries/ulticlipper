@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from backend.models import Clip, TagGroup, Video, Tag, TagGroup
-from backend.stats_classes import EventType
+from backend.stats_classes import EventType, Event
 
 from pandas.errors import EmptyDataError
 
@@ -110,13 +110,15 @@ class SyncCommit(APIView):
                     for group, name in event.items():
                         ignore_fields = ['datetime_game', 'event_start_elapsed']
                         if group not in ignore_fields and name is not None and name != 'Anonymous':
-                            tag_group, _ = TagGroup.objects.get_or_create(name=group, team=active_team)
+                            tag_type = 'numeric' if group in Event.NUMERIC_FIELDS else 'text'
+                            tag_group, _ = TagGroup.objects.get_or_create(name=group, team=active_team, type=tag_type)
                             if group == 'players_on':
                                 for player_name in name:
                                     tag, _ = Tag.objects.get_or_create(name=player_name, group=tag_group, team=active_team)
                                     tag.clips.add(new_event)
                             else:
-                                tag, _ = Tag.objects.get_or_create(name=name, group=tag_group, team=active_team)
+                                value = float(name) if tag_type == 'numeric' else None
+                                tag, _ = Tag.objects.get_or_create(name=name, value=value, group=tag_group, team=active_team, type=tag_type)
                                 tag.clips.add(new_event)
 
         except IntegrityError:

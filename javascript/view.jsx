@@ -115,8 +115,6 @@ const StatsPanel = (props) => {
                 }));
                 setEvents(processed_events)
                 setLoading(false);
-                console.log(processed_events)
-
             })
     }, [])
 
@@ -170,14 +168,12 @@ const JumpTimeline = (props) => {
 
                 }
                 );
-                console.log(processed_events)
                 setEvents(processed_events)
             })
     }, [])
 
 
     const createClickHandler = timestamp => (event) => {
-        console.log(timestamp)
         props.player?.seekTo(timestamp)
     }
 

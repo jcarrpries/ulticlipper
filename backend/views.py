@@ -64,15 +64,26 @@ class ClipList(APIView):
 
         start = round(time.time() * 1000)
         clips = Clip.objects.filter(team=active_team)
-
         tag_groups = TagGroup.objects.filter(team=active_team)
         for tag_group in tag_groups:
             tag_group_name = tag_group.name
+            if tag_group.type == "numeric":
+                min = request.GET.get(f'{tag_group_name}[min]', '')
+                if min != '':
+                    clips = clips.filter(tag__group__name=tag_group_name, tag__value__gte=float(min))
+
+                max = request.GET.get(f'{tag_group_name}[max]', '')
+                if max != '':
+                    clips = clips.filter(tag__group__name=tag_group_name, tag__value__lte=float(max))
+
+                next
+            
             tag_ids_in_group = request.GET.get(tag_group_name, '[]')
             tag_ids_in_group = json.loads(tag_ids_in_group)
 
             if(tag_ids_in_group and len(tag_ids_in_group) > 0):
                 clips = clips.filter(tag__in=tag_ids_in_group)
+    
         print("millis", round(time.time() * 1000) - start)
         serializer = ClipSerializer(clips, many=True)
         return Response(serializer.data)

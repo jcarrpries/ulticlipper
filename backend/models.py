@@ -28,17 +28,37 @@ class Clip(models.Model):
         ordering = ['timestamp']
 
 class TagGroup(models.Model):
+    TYPES = (
+        ('text', 'Text'),
+        ('numeric', 'Numeric')
+    )
     name = models.CharField(max_length=50)
     team = models.ForeignKey(Team, related_name='tag_groups', on_delete=models.CASCADE, null=True)
+    type = models.CharField(choices=TYPES, max_length=20, default='text')
 
     class Meta:
         indexes = [models.Index(fields=['name']), ]
 
 class Tag(models.Model):
-    name = models.CharField(max_length=50)
+    TYPES = (
+        ('text', 'Text'),
+        ('numeric', 'Numeric')
+    )
+    name = models.CharField(max_length=50, null=True)
+    value = models.FloatField(null=True)
     clips = models.ManyToManyField(Clip)
     group = models.ForeignKey(TagGroup, related_name='tags', on_delete=models.PROTECT, null=True)
     team = models.ForeignKey(Team, related_name='tags', on_delete=models.CASCADE, null=True)
+    type = models.CharField(choices=TYPES, max_length=20, default='text')
+
+    def save(self, *args, **kwargs):
+        if self.type != self.group.type:
+            raise ValueError('Tag type must match TagGroup type')
+        if self.name is None and self.value is None:
+            raise ValueError("Either name or value must have a value")
+        
+        super().save(*args, **kwargs)
+
     class Meta:
         indexes = [models.Index(fields=['name']), ]
 
