@@ -96,6 +96,7 @@ class ClipList(APIView):
         
         video = Video.objects.filter(team=active_team).get(pk=request.data['video_id'])
         tag_ids = request.data['tag_ids']
+        tag_values = request.data['tag_values']
 
         if video is None:
             return Response("no-video", status=400)
@@ -109,8 +110,16 @@ class ClipList(APIView):
         new_clip.save()
         if len(tag_ids) > 0:
             new_clip.tag_set.add(*tag_ids) 
-            new_clip.save()
         
+        for group_name, value in tag_values.items():
+            if value == '':
+                next
+            group = TagGroup.objects.get(name=group_name)
+            tag = Tag(group=group, type='numeric', value=float(value), name=value)
+            tag.save()
+            new_clip.tag_set.add(tag)
+        
+        new_clip.save()
         serializer = ClipSerializer(new_clip)
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)

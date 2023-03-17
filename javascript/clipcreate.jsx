@@ -19,6 +19,7 @@ const ClipCreate = () => {
 	const [error, setError] = useState()
 	const [tagGroups, setTagGroups] = useState([])
     const [selectedTags, setSelectedTags] = useState({});
+	const [numericTags, setNumericTags] = useState({});
 	const [tagIsLoading, setTagIsLoading] = useState(false);
 
     const fetchVideos = () => {
@@ -56,6 +57,10 @@ const ClipCreate = () => {
         setEnd(0)
     }
 
+	const handleChangeNumericTags = (name, value) => {
+		setNumericTags({...numericTags, [name]: value})
+	}
+
 	const handleSubmit = async () => {
 		if (start >= end) {
 			setError("End time must be greater than start time")
@@ -66,7 +71,8 @@ const ClipCreate = () => {
 			timestamp: start,
 			duration: end - start,
 			video_id: videos[selectedVideoIdx].id,
-			tag_ids: tagIds
+			tag_ids: tagIds,
+			tag_values: numericTags
 		}
 
 		const response = await fetch('/api/clips/', {
@@ -190,6 +196,22 @@ const ClipCreate = () => {
 				</div>
 				<div className="column">
 					{tagGroups.map((group, idx) => {
+						if (group.type == "numeric") {
+							return (
+							<div style={{ width: '550px'}} className="control">
+								<label htmlFor="min-input" className="label">
+									{group.name}
+								</label>
+								<input
+								id="min-input"
+								className="input"
+								type="number"
+								value={numericTags[group.name]}
+								onChange={e => handleChangeNumericTags(group.name, e.target.value)}
+								step="0.01"
+								/>
+							</div>)
+						}
 						return (
 							<div style={{ width: '550px'}} key={idx}>
 								<CreatableSelect
