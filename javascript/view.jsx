@@ -189,7 +189,7 @@ const View = () => {
 
     const [loading, setLoading] = useState(true);
     const [clip, setClip] = useState({});
-
+	const [tagGroups, setTagGroups] = useState([])
     const [player, setPlayer] = useState(null);
 
     const [viewedNote, setViewedNote] = useState('');
@@ -199,6 +199,8 @@ const View = () => {
         fetch(`/api/clips/${clipId}`).then((resp) => {
             return resp.json();
         }).then((json) => {
+			setTagGroups(json["tag_groups"])
+			delete json["tag_groups"]
             setClip(json);
             setLoading(false);
         })
@@ -261,7 +263,17 @@ const View = () => {
                 </div>
             }
 
-            <h1>Clip:</h1>
+            <h1 className='subtitle'>Clip:</h1>
+			{tagGroups.map(group => {
+				return (<div key={group.id} className='block'>
+					<div>{group.name}</div>
+					<div className='tags'>
+						{group.tags.map((tag) =>
+							<span key={tag.id} className='tag'>{tag.name || tag.value}</span>
+						)}
+					</div>
+				</div>)
+			})}
             <div className="block">
                 <pre><code>{JSON.stringify(clip, null, 4)}</code></pre>
             </div>

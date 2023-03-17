@@ -12,9 +12,9 @@ class TagSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 class BasicTagSerializer(serializers.ModelSerializer):
-	class Meta:
-		model = Tag
-		exclude = ["clips"]
+    class Meta:
+        model = Tag
+        exclude = ["clips", "group", "team", "type"]
 
 class ClipSerializer(serializers.ModelSerializer):
     video = VideoSerializer()
@@ -24,11 +24,31 @@ class ClipSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 class TagGroupSerializer(serializers.ModelSerializer):
-	tags = BasicTagSerializer(many=True, read_only=True)
+    tags = BasicTagSerializer(many=True, read_only=True)
 
-	class Meta:
-		model = TagGroup
-		fields = ["id", "name", "type", "tags"]
+    class Meta:
+        model = TagGroup
+        fields = ["id", "name", "type", "tags"]
+
+class TagGroupForClipSerializer(serializers.ModelSerializer):
+    tags = serializers.SerializerMethodField()
+
+    def get_tags(self, obj):
+        clip = self.context.get('clip')
+        tags = obj.tags.filter(clips=clip)
+        return BasicTagSerializer(tags, many=True, read_only=True).data
+
+    class Meta:
+        model = TagGroup
+        fields = ["id", "name", "type", "tags"]  
+
+class ClipTagSerializer(serializers.ModelSerializer):
+    tag_groups = TagGroupForClipSerializer(source='video.team.tag_groups', many=True, read_only=True)
+    video = VideoSerializer()
+
+    class Meta:
+        model = Clip
+        fields = "__all__"
 
 class TagClipSerializer(serializers.ModelSerializer):
     clips = ClipSerializer(many=True, read_only=True)

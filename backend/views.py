@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from backend.models import Clip, Video, Tag, TagGroup, Comment, UserData, Team, InviteCode
 from django.contrib.auth.models import User
-from backend.serializers import ClipSerializer, EventSerializer, TagClipSerializer, TagSerializer, VideoSerializer, TagGroupSerializer, EventSerializer, CommentSerializer
+from backend.serializers import ClipSerializer, EventSerializer, TagClipSerializer, TagSerializer, VideoSerializer, TagGroupSerializer, EventSerializer, CommentSerializer, ClipTagSerializer
 from django.conf import settings
 
 from backend.read_stats import get_point_clips
@@ -128,7 +128,7 @@ class ClipDetail(APIView):
             return Response("no-active-team", status=400)
 
         clip = self.get_object(pk, active_team)
-        serializer = ClipSerializer(clip)
+        serializer = ClipTagSerializer(clip, context={'clip': clip})
         return Response(serializer.data)
 
     def delete(self, request, pk, format=None):
