@@ -134,7 +134,7 @@ const StatsPanel = (props) => {
                 <hr />
                 <div>
                     <PopulationPyramid data={[
-                        { label: 'Offensive Possesions', theirPercent: stats.theirOChances == 0 ? 0 : stats.theirHolds / stats.theirOChances, ourPercent: stats.ourOChances == 0 ? 0 : stats.ourHolds / stats.ourOChances, theirText: `${stats.theirHolds}/${stats.theirOChances}`, ourText: `${stats.ourHolds}/${stats.ourOChances}` },
+                        { label: 'Offensive Chances', theirPercent: stats.theirOChances == 0 ? 0 : stats.theirHolds / stats.theirOChances, ourPercent: stats.ourOChances == 0 ? 0 : stats.ourHolds / stats.ourOChances, theirText: `${stats.theirHolds}/${stats.theirOChances}`, ourText: `${stats.ourHolds}/${stats.ourOChances}` },
                         { label: 'Break Chances', theirPercent: stats.theirBreakChances == 0 ? 0 : stats.theirBreaks / stats.theirBreakChances, ourPercent: stats.ourBreakChances == 0 ? 0 : stats.ourBreaks / stats.theirBreakChances, theirText: `${stats.theirBreaks}/${stats.theirBreakChances}`, ourText: `${stats.ourBreaks}/${stats.theirBreakChances}` },
                         { label: 'Turnovers', theirPercent: stats.theirTurnovers, ourPercent: stats.ourTurnovers, theirText: `${stats.theirTurnovers}`, ourText: `${stats.ourTurnovers}` },
                     ]} />
