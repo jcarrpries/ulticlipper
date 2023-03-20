@@ -98,11 +98,13 @@ class SyncCommit(APIView):
         try:
             with transaction.atomic():
                 new_video.save()
-                for event in new_events:
+                for i in range(len(new_events)):
+                    event = new_events[i]
+                    duration = new_events[i+1]['event_start_elapsed'] - event['event_start_elapsed'] if i < len(new_events) - 1 else 0
                     new_event = Clip(
                         timestamp=event['event_start_elapsed'],
                         date=parse_date(event['datetime_game']),
-                        duration=0,
+                        duration=duration,
                         video=new_video,
                         team=active_team
                     )
