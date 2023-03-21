@@ -6,11 +6,16 @@ import Timeline from './game-timeline';
 import CommentSection from './comments';
 
 import YoutubePlayer from './youtube-player'
-
+const loadingStyle = {
+    fontSize: '24px',
+    fontWeight: 'bold',
+    color: '#4a4a4a',
+    textAlign: 'center',
+    padding: '20px',
+};
 const StatsPanel = (props) => {
-    const [events, setEvents] = useState([]);
-    const [loading, setLoading] = useState(true);
 
+    events = props.events
     const [currentTime, setCurrentTime] = useState(props.clip ? props.clip.timestamp : -1);
     const [previousTime, setPreviousTime] = useState(props.clip ? props.clip.timestamp : -1);
     const [stats, setStats] = useState({ theirScore: 0, ourScore: 0, theirTurnovers: 0, ourTurnovers: 0, theirOChances: 0, ourOChances: 0, theirHolds: 0, ourHolds: 0, theirBreakChances: 0, ourBreakChances: 0, theirBreaks: 0, ourBreaks: 0, period: "1st" });
@@ -94,30 +99,6 @@ const StatsPanel = (props) => {
         return () => clearInterval(interval);
     }, [props.player, currentTime, previousTime]);
 
-    useEffect(() => {
-        fetch(`/api/clips_by_video/${props.clip.video.id}`)
-            .then(resp => resp.json())
-            .then(json => {
-                hist = {}
-                json.forEach(e => {
-                    e_type = (e.event_types).toString()
-                    hist[e_type] = (hist[e_type] || 0) + 1
-                })
-                const processed_events = json.map((e, idx) => ({
-                    defense: e.possession_types.includes("Defense"),
-                    event_type: e.event_types[0],
-                    line_type: e.line_type,
-                    passer: e.passer,
-                    defender: e.defender,
-                    receiver: e.receiver,
-                    timestamp: e.timestamp,
-                    idx,
-                }));
-                setEvents(processed_events)
-                setLoading(false);
-            })
-    }, [])
-
     function convertSecondsToTime(seconds) {
         const h = Math.floor(seconds / 3600); // Get the number of hours
         const m = Math.floor((seconds % 3600) / 60); // Get the number of minutes
@@ -125,61 +106,38 @@ const StatsPanel = (props) => {
         return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
     }
 
-    return <>
-        {loading ? <p>loading...</p> :
+    return (<>
+        <Scoreboard homeScore={stats.ourScore} awayScore={stats.theirScore} time={convertSecondsToTime(currentTime)} period={stats.period} />
 
-            <>
-                <Scoreboard homeScore={stats.ourScore} awayScore={stats.theirScore} time={convertSecondsToTime(currentTime)} period={stats.period} />
-
-                <hr />
-                <div>
-                    <PopulationPyramid data={[
-                        { label: 'Offensive Chances', theirPercent: stats.theirOChances == 0 ? 0 : stats.theirHolds / stats.theirOChances, ourPercent: stats.ourOChances == 0 ? 0 : stats.ourHolds / stats.ourOChances, theirText: `${stats.theirHolds}/${stats.theirOChances}`, ourText: `${stats.ourHolds}/${stats.ourOChances}` },
-                        { label: 'Break Chances', theirPercent: stats.theirBreakChances == 0 ? 0 : stats.theirBreaks / stats.theirBreakChances, ourPercent: stats.ourBreakChances == 0 ? 0 : stats.ourBreaks / stats.theirBreakChances, theirText: `${stats.theirBreaks}/${stats.theirBreakChances}`, ourText: `${stats.ourBreaks}/${stats.theirBreakChances}` },
-                        { label: 'Turnovers', theirPercent: stats.theirTurnovers, ourPercent: stats.ourTurnovers, theirText: `${stats.theirTurnovers}`, ourText: `${stats.ourTurnovers}` },
-                    ]} />
-                    {/* <p>Previous Time: {previousTime}</p> */}
-                    <JumpTimeline player={props.player} clip={props.clip} />
-                </div>
-            </>}
-    </>
+        <hr />
+        <div>
+            <PopulationPyramid data={[
+                { label: 'Offensive Chances', theirPercent: stats.theirOChances == 0 ? 0 : stats.theirHolds / stats.theirOChances, ourPercent: stats.ourOChances == 0 ? 0 : stats.ourHolds / stats.ourOChances, theirText: `${stats.theirHolds}/${stats.theirOChances}`, ourText: `${stats.ourHolds}/${stats.ourOChances}` },
+                { label: 'Break Chances', theirPercent: stats.theirBreakChances == 0 ? 0 : stats.theirBreaks / stats.theirBreakChances, ourPercent: stats.ourBreakChances == 0 ? 0 : stats.ourBreaks / stats.theirBreakChances, theirText: `${stats.theirBreaks}/${stats.theirBreakChances}`, ourText: `${stats.ourBreaks}/${stats.theirBreakChances}` },
+                { label: 'Turnovers', theirPercent: stats.theirTurnovers, ourPercent: stats.ourTurnovers, theirText: `${stats.theirTurnovers}`, ourText: `${stats.ourTurnovers}` },
+            ]} />
+            {/* <p>Previous Time: {previousTime}</p> */}
+            <JumpTimeline player={props.player} clip={props.clip} events={events} />
+        </div>
+    </>)
 }
 
 const JumpTimeline = (props) => {
-    const [events, setEvents] = useState([]);
 
+    const notableEvents = props.events.filter(e => e.event_type == "GOAL")
 
-    useEffect(() => {
-        fetch(`/api/clips_by_video/${props.clip.video.id}`)
-            .then(resp => resp.json())
-            .then(json => {
-                hist = {}
-                json.forEach(e => {
-                    e_type = (e.event_types).toString()
-                    hist[e_type] = (hist[e_type] || 0) + 1
-                })
-                const notableEvents = json.filter(e => e.event_types[0] == "GOAL")
+    const processed_events = notableEvents.map(function (e, idx) {
 
-                const processed_events = notableEvents.map(function (e, idx) {
+        if (e.event_type == "GOAL") {
+            return { id: idx, timestamp: e.timestamp, icon: '🥏', our: !e.defense }
+        }
 
-                    if (e.event_types[0] == "GOAL") {
-                        return { id: idx, timestamp: e.timestamp, icon: '🥏', our: e.possession_types.includes("Offense") }
-                    }
-
-                }
-                );
-                setEvents(processed_events)
-            })
-    }, [])
-
-
-    const createClickHandler = timestamp => (event) => {
-        props.player?.seekTo(timestamp)
     }
+    );
 
     return <>
         <div>
-            <Timeline goals={events} player={props.player} />
+            <Timeline goals={processed_events} player={props.player} />
         </div>
     </>
 }
@@ -189,8 +147,10 @@ const View = () => {
 
     const [loading, setLoading] = useState(true);
     const [clip, setClip] = useState({});
-	const [tagGroups, setTagGroups] = useState([])
+    const [tagGroups, setTagGroups] = useState([])
     const [player, setPlayer] = useState(null);
+    const [events, setEvents] = useState([]);
+
 
     const [viewedNote, setViewedNote] = useState('');
     const [annotating, setAnnotating] = useState(false);
@@ -199,10 +159,34 @@ const View = () => {
         fetch(`/api/clips/${clipId}`).then((resp) => {
             return resp.json();
         }).then((json) => {
-			setTagGroups(json["tag_groups"])
-			delete json["tag_groups"]
+            setTagGroups(json["tag_groups"])
+            delete json["tag_groups"]
             setClip(json);
-            setLoading(false);
+            return json
+        }).then((c) => {
+
+            fetch(`/api/clips_by_video/${c.video.id}`)
+                .then(resp => resp.json())
+                .then(json => {
+                    hist = {}
+                    json.forEach(e => {
+                        e_type = (e.event_types).toString()
+                        hist[e_type] = (hist[e_type] || 0) + 1
+                    })
+                    const processed_events = json.map((e, idx) => ({
+                        defense: e.possession_types.includes("Defense"),
+                        event_type: e.event_types[0],
+                        line_type: e.line_type,
+                        passer: e.passer,
+                        defender: e.defender,
+                        receiver: e.receiver,
+                        timestamp: e.timestamp,
+                        idx,
+                    }));
+                    setEvents(processed_events)
+                    setLoading(false);
+
+                })
         })
     }, []);
 
@@ -216,13 +200,14 @@ const View = () => {
 
     return (
         <div className="card">
-            {loading ? <p>loading...</p> :
+            {loading ? <p style={loadingStyle}>Loading...</p>
+                :
                 // <div className="card-content" style={{ display: 'flex', flexDirection: 'row' }}>
                 <div className="card-content">
                     <div className="columns">
                         <div className="column">
-                            <div style={{ position: "relative", display: "table"}}>
-                                <YoutubePlayer clip={clip} setPlayer={setPlayer}/>
+                            <div style={{ position: "relative", display: "table" }}>
+                                <YoutubePlayer clip={clip} setPlayer={setPlayer} />
                                 {annotating &&
                                     <canvas ref={canvasRef} id="canv" style={{
                                         border: "3px solid red",
@@ -251,29 +236,29 @@ const View = () => {
                                         src={`data:image/svg+xml;utf8,${encodeURIComponent(viewedNote)}`} />
                                 }
                             </div>
-                            <div style={{width: player == null ? "640" : player.h.width}}>
+                            <div style={{ width: player == null ? "640" : player.h.width }}>
                                 <CommentSection ref={canvasRef} player={player} videoId={clip.video.id} annotating={annotating}
                                     viewedNote={viewedNote} setAnnotating={setAnnotating} setViewedNote={setViewedNote} />
                             </div>
                         </div>
                         <div className="column">
-                            <StatsPanel player={player} clip={clip} />
+                            <StatsPanel player={player} clip={clip} events={events} />
                         </div>
                     </div>
                 </div>
             }
 
             <h1 className='subtitle'>Clip:</h1>
-			{tagGroups.map(group => {
-				return (<div key={group.id} className='block'>
-					<div>{group.name}</div>
-					<div className='tags'>
-						{group.tags.map((tag) =>
-							<span key={tag.id} className='tag'>{tag.name || tag.value}</span>
-						)}
-					</div>
-				</div>)
-			})}
+            {tagGroups.map(group => {
+                return (<div key={group.id} className='block'>
+                    <div>{group.name}</div>
+                    <div className='tags'>
+                        {group.tags.map((tag) =>
+                            <span key={tag.id} className='tag'>{tag.name || tag.value}</span>
+                        )}
+                    </div>
+                </div>)
+            })}
             <div className="block">
                 <pre><code>{JSON.stringify(clip, null, 4)}</code></pre>
             </div>
