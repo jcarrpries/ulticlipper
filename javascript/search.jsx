@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
 import Select from 'react-select';
 import { getCsrfToken } from './auth/auth_manager';
 import RangeInput from './common/rangeinput';
+import { useNavigate, Link } from 'react-router-dom';
 
 const Search = () => {
+	const navigate = useNavigate()
     let [clips, setClips] = useState([])
+	const [clipIds, setClipIds] = useState([])
     let [tagGroups, setTagGroups] = useState([])
     let [tags, setTags] = useState([])
     let [selectedOptions, setSelectedOptions] = useState({});
@@ -48,6 +50,8 @@ const Search = () => {
             return resp.json()
         }).then((json) => {
             setClips(json)
+			const ids = json.map(clip => clip.id)
+			setClipIds(ids)
             console.timeEnd()
             setGotResults(true)
             setSearchLoading(false)
@@ -76,6 +80,10 @@ const Search = () => {
 
 	const handleRangeChange = (name, data) => {
 		setSelectedRanges({...selectedRanges, [name]: data})
+	}
+	
+	const handleClipSelect = (clipId, clipIdx) => {
+		navigate(`/clip/${clipId}`, {state: {curClipIdx: clipIdx, clipIds}})
 	}
 
     // use useEffect to run this code once when the component loads
@@ -156,10 +164,9 @@ const Search = () => {
                                 </div>
                                 <div className="card-content">
                                     <div className="block">
-                                        <Link to={"/clip/" + clip.id}><img src={"//img.youtube.com/vi/" + clip.video.youtube_id + "/0.jpg"} width="200" height="100" /></Link>
+                                        <img onClick={() => handleClipSelect(clip.id, idx)} src={"//img.youtube.com/vi/" + clip.video.youtube_id + "/0.jpg"} width="200" height="100" />
 										<button className="button is-light is-pulled-right mr-1" id="delete-button" onClick={() => deleteClip(clip.id, idx)}>Delete</button>
                                     </div>
-                                    {/* <pre><code>{JSON.stringify(clip, null, 2)}</code></pre> */}
                                 </div>
                             </div>
                         </div>
