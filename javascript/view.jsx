@@ -25,7 +25,6 @@ const StatsPanel = (props) => {
 
     useEffect(() => {
         const interval = setInterval(() => {
-            setPreviousTime(currentTime);
 
             let theirScore = stats.theirScore;
             let ourScore = stats.ourScore;
@@ -40,10 +39,34 @@ const StatsPanel = (props) => {
             let ourBreaks = stats.ourBreaks;
             let theirBreaks = stats.theirBreaks;
             let period = stats.period;
+            let prevTime = previousTime
+            
+            if (~~props.player?.getCurrentTime() < currentTime) {
+                prevTime = 0;
+                theirScore = 0
+                ourScore = 0
+                theirTurnovers = 0;
+                ourTurnovers = 0
+                theirOChances = 0
+                ourOChances = 0
+                ourHolds = 0
+                theirHolds = 0
+                theirBreakChances = 0
+                ourBreakChances = 0
+                ourBreaks = 0
+                theirBreaks = 0
+                period = "1st"
+            } else {
+                prevTime = currentTime;
+            }
 
+            setPreviousTime(prevTime)
+            
+            let currTime = ~~props.player?.getCurrentTime()
+            setCurrentTime(currTime);
 
             events.forEach(event => {
-                if (event.timestamp > previousTime && event.timestamp <= currentTime) {
+                if (event.timestamp > prevTime && event.timestamp <= currTime) {
                     if (event.defense && event.event_type === 'GOAL') {
                         theirScore += 1;
                     } else if (!event.defense && event.event_type === 'GOAL') {
@@ -97,10 +120,9 @@ const StatsPanel = (props) => {
             });
 
             setStats({ theirScore, ourScore, theirTurnovers, ourTurnovers, theirOChances, ourOChances, theirHolds, ourHolds, theirBreakChances, ourBreakChances, theirBreaks, ourBreaks, period });
-            setCurrentTime(~~props.player?.getCurrentTime());
         }, 500);
         return () => clearInterval(interval);
-    }, [props.player, currentTime, previousTime]);
+    }, [props.player, currentTime, previousTime,stats]);
 
     function convertSecondsToTime(seconds) {
         const h = Math.floor(seconds / 3600); // Get the number of hours
@@ -146,10 +168,10 @@ const JumpTimeline = (props) => {
 }
 
 const View = () => {
-	const location = useLocation()
-	const {curClipIdx, clipIds} = location.state
+    const location = useLocation()
+    const { curClipIdx, clipIds } = location.state
     let { clipId: clipIdParam } = useParams();
-	const navigate = useNavigate()
+    const navigate = useNavigate()
 
     const [loading, setLoading] = useState(true);
     const [clip, setClip] = useState({});
@@ -162,14 +184,14 @@ const View = () => {
     const [viewedNote, setViewedNote] = useState('');
     const [annotating, setAnnotating] = useState(false);
 
-	
-	const handleChangeClip = (diff) => {
-		const id = clipIds[curClipIdx + diff]
-		navigate(`/clip/${id}`, {state: {curClipIdx: curClipIdx + diff, clipIds}})
-	}
+
+    const handleChangeClip = (diff) => {
+        const id = clipIds[curClipIdx + diff]
+        navigate(`/clip/${id}`, { state: { curClipIdx: curClipIdx + diff, clipIds } })
+    }
 
     useEffect(() => {
-		setLoading(true)
+        setLoading(true)
         fetch(`/api/clips/${clipId}`).then((resp) => {
             return resp.json();
         }).then((json) => {
@@ -205,80 +227,80 @@ const View = () => {
     }, [clipId]);
 
     useEffect(() => {
-		if (clipId !== clipIdParam) {
-			setClipId(clipIdParam)
-		}
-	}, [clipId, clipIdParam])
+        if (clipId !== clipIdParam) {
+            setClipId(clipIdParam)
+        }
+    }, [clipId, clipIdParam])
 
     const canvasRef = useRef(null);
 
     return (
         <div className="card">
             {loading ? <p style={loadingStyle}>Loading...</p> :
-				<div>
-					{curClipIdx != undefined &&
-						<div className="level m-3">
-							<div className='level-left'>
-								{curClipIdx > 0 &&
-								<div className='level-item'>
-									<button onClick={() => handleChangeClip(-1)} className='button is-primary is-medium'>Previous Clip</button>
-								</div>
-								}
-							</div>
-							<ProgressBar player={player} duration={clip.duration} startTime={clip.timestamp}/>
-							<div className='level-right'>
-								{curClipIdx < clipIds.length - 1 &&
-								<div className='level-item'>
-									<button onClick={() => handleChangeClip(1)} className='button is-primary is-medium'>Next Clip</button>
-								</div>
-								}
-							</div>
-						</div>
-					}
-					<div className="card-content">
-						<div className="columns">
-							<div className="column">
-								<div style={{ position: "relative", display: "table"}}>
-									<YoutubePlayer clip={clip} setPlayer={setPlayer}/>
-									{annotating &&
-										<canvas ref={canvasRef} id="canv" style={{
-											border: "3px solid red",
-											position: "absolute",
-											top: 0,
-											left: 0,
-											height: "100%",
-											width: "100%"
-										}}></canvas>
-									}
-									{(!annotating && viewedNote != '') &&
-										<img onClick={() => {
-											setViewedNote('');
-											if (player != null) {
-												player.playVideo();
-											}
-										}}
-											style={{
-												border: "3px solid red",
-												position: "absolute",
-												top: 0,
-												left: 0,
-												height: "100%",
-												width: "100%"
-											}}
-											src={`data:image/svg+xml;utf8,${encodeURIComponent(viewedNote)}`} />
-									}
-								</div>
-								<div style={{width: player?.h?.width == null ? "640" : player.h.width}}>
-									<CommentSection ref={canvasRef} player={player} videoId={clip.video.id} annotating={annotating}
-										viewedNote={viewedNote} setAnnotating={setAnnotating} setViewedNote={setViewedNote} />
-								</div>
-							</div>
-							<div className="column">
-								<StatsPanel player={player} clip={clip} events={events}/>
-							</div>
-						</div>
-					</div>
-				</div>
+                <div>
+                    {curClipIdx != undefined &&
+                        <div className="level m-3">
+                            <div className='level-left'>
+                                {curClipIdx > 0 &&
+                                    <div className='level-item'>
+                                        <button onClick={() => handleChangeClip(-1)} className='button is-primary is-medium'>Previous Clip</button>
+                                    </div>
+                                }
+                            </div>
+                            <ProgressBar player={player} duration={clip.duration} startTime={clip.timestamp} />
+                            <div className='level-right'>
+                                {curClipIdx < clipIds.length - 1 &&
+                                    <div className='level-item'>
+                                        <button onClick={() => handleChangeClip(1)} className='button is-primary is-medium'>Next Clip</button>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                    <div className="card-content">
+                        <div className="columns">
+                            <div className="column">
+                                <div style={{ position: "relative", display: "table" }}>
+                                    <YoutubePlayer clip={clip} setPlayer={setPlayer} />
+                                    {annotating &&
+                                        <canvas ref={canvasRef} id="canv" style={{
+                                            border: "3px solid red",
+                                            position: "absolute",
+                                            top: 0,
+                                            left: 0,
+                                            height: "100%",
+                                            width: "100%"
+                                        }}></canvas>
+                                    }
+                                    {(!annotating && viewedNote != '') &&
+                                        <img onClick={() => {
+                                            setViewedNote('');
+                                            if (player != null) {
+                                                player.playVideo();
+                                            }
+                                        }}
+                                            style={{
+                                                border: "3px solid red",
+                                                position: "absolute",
+                                                top: 0,
+                                                left: 0,
+                                                height: "100%",
+                                                width: "100%"
+                                            }}
+                                            src={`data:image/svg+xml;utf8,${encodeURIComponent(viewedNote)}`} />
+                                    }
+                                </div>
+                                <div style={{ width: player?.h?.width == null ? "640" : player.h.width }}>
+                                    <CommentSection ref={canvasRef} player={player} videoId={clip.video.id} annotating={annotating}
+                                        viewedNote={viewedNote} setAnnotating={setAnnotating} setViewedNote={setViewedNote} />
+                                </div>
+                            </div>
+                            <div className="column">
+                                <StatsPanel player={player} clip={clip} events={events} />
+                            </div>
+                        </div>
+                    </div>
+                </div>
             }
 
             <h1 className='subtitle'>Clip:</h1>
