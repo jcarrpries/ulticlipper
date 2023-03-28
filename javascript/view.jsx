@@ -75,14 +75,8 @@ const StatsPanel = (props) => {
                     }
 
                     if (event.event_type === 'GOAL') {
-                        console.log("1")
                         const nextEvent = events[index + 1];
-                        console.log("2")
-                        
-                        console.log(nextEvent.timestamp)
                         if (nextEvent) {
-                            console.log("3")
-                            console.log(nextEvent.timestamp)
                             setNextPoint(nextEvent.timestamp);
                         }
                     } else if ((nextPoint != 0 && event.event_type !== 'GOAL') || nextPoint > currTime) {
