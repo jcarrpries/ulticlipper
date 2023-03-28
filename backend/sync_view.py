@@ -64,13 +64,19 @@ class SyncChooseGame(APIView):
 
         # find halftime
         for idx, event in enumerate(game_object.events):
-            if int(event.our_score) + int(event.their_score) == 8:
+            if int(event.our_score) == 8 or int(event.their_score) == 8:
+                while(game_object.events[idx].event_type != EventType.GOAL and idx < len(game_object.events) ):
+                    idx+=1
                 # mark halftime as first event after halftime event
-                halftime = game_object.events[idx+1].event_start_elapsed
+                halftime = game_object.events[idx].event_start_elapsed
+                break
             if event.event_type == EventType.HALFTIME:
                 # mark halftime as first event after halftime event
-                halftime = game_object.events[idx+1].event_start_elapsed
+                while(game_object.events[idx].event_type != EventType.GOAL and idx < len(game_object.events) ):
+                    idx+=1
+                halftime = game_object.events[idx].event_start_elapsed
                 break
+        print("Goal After Halftime Guess:", halftime)
         return Response({
             'youtube_id': youtube_id,
             'halftime': halftime,
