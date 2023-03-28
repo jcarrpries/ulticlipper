@@ -116,8 +116,7 @@ class ClipList(APIView):
             if value == '':
                 next
             group = TagGroup.objects.get(name=group_name)
-            tag = Tag.objects.get_or_create(group=group, type='numeric', value=float(value), name=value)
-            tag.save()
+            tag, _ = Tag.objects.get_or_create(group=group, type='numeric', value=float(value), name=value)
             new_clip.tag_set.add(tag)
         
         new_clip.save()
