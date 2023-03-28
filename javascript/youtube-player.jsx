@@ -54,7 +54,7 @@ const YoutubePlayer = (props) => {
                     modestbranding: 1,
                     rel: 0, // only show related videos from same channel
                     // https://developers.google.com/youtube/player_parameters
-                    start: clip ? clip.timestamp : 0,
+                    start: clip ? clip.timestamp-4 : 0,
                 },
             }}
         />
