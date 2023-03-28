@@ -179,7 +179,7 @@ const JumpTimeline = (props) => {
 
 const View = () => {
     const location = useLocation()
-    const { curClipIdx, clipIds } = location.state
+    const { curClipIdx, clipIds } = location.state || {}
     let { clipId: clipIdParam } = useParams();
     const navigate = useNavigate()
 
@@ -248,25 +248,27 @@ const View = () => {
         <div className="card">
             {loading ? <p style={loadingStyle}>Loading...</p> :
                 <div>
-                    {curClipIdx != undefined &&
-                        <div className="level m-3">
-                            <div className='level-left'>
-                                {curClipIdx > 0 &&
-                                    <div className='level-item'>
-                                        <button onClick={() => handleChangeClip(-1)} className='button is-primary is-medium'>Previous Clip</button>
-                                    </div>
-                                }
-                            </div>
-                            <ProgressBar player={player} duration={clip.duration} startTime={clip.timestamp} />
-                            <div className='level-right'>
-                                {curClipIdx < clipIds.length - 1 &&
-                                    <div className='level-item'>
-                                        <button onClick={() => handleChangeClip(1)} className='button is-primary is-medium'>Next Clip</button>
-                                    </div>
-                                }
-                            </div>
-                        </div>
-                    }
+					<div className="level m-3">
+						{curClipIdx && 
+							<div className='level-left'>
+								{curClipIdx > 0 &&
+									<div className='level-item'>
+										<button onClick={() => handleChangeClip(-1)} className='button is-primary is-medium'>Previous Clip</button>
+									</div>
+								}
+							</div>
+						}
+						<ProgressBar player={player} duration={clip.duration} startTime={clip.timestamp} />
+						{curClipIdx && 
+							<div className='level-right'>
+								{curClipIdx < clipIds.length - 1 &&
+									<div className='level-item'>
+										<button onClick={() => handleChangeClip(1)} className='button is-primary is-medium'>Next Clip</button>
+									</div>
+								}
+							</div>
+						}
+					</div>
                     <div className="card-content">
                         <div className="columns">
                             <div className="column">

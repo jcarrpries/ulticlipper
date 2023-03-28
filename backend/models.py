@@ -17,12 +17,17 @@ class Video(models.Model):
     team = models.ForeignKey(Team, related_name='videos', on_delete=models.CASCADE, null=True)
 
 class Clip(models.Model):
+    TYPES = (
+        ('generated', 'Generated'),
+        ('custom', 'Custom')
+	)
     timestamp = models.IntegerField()
     duration = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     video = models.ForeignKey(Video, on_delete=models.CASCADE)
     date=models.DateTimeField(null=True)
     team = models.ForeignKey(Team, related_name='clips', on_delete=models.CASCADE, null=True)
+    type = models.CharField(choices=TYPES, max_length=20, default='generated')
 
     class Meta:
         ordering = ['timestamp']
