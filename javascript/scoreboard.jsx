@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Scoreboard({ homeScore, awayScore, time, period }) {
+function Scoreboard({ homeScore, awayScore, time, period, nextPoint, player, setNextPoint }) {
   const scoreboardStyle = {
     display: 'flex',
     justifyContent: 'space-between',
@@ -36,7 +36,7 @@ function Scoreboard({ homeScore, awayScore, time, period }) {
     fontWeight: 'bold',
     marginBottom: '10px',
     textShadow: '2px 2px 3px rgba(0, 0, 0, 0.3)',
-    
+
   };
 
   const scoreStyleHome = {
@@ -46,7 +46,7 @@ function Scoreboard({ homeScore, awayScore, time, period }) {
   const scoreStyleAway = {
     color: 'blue'
   };
-  
+
   const nameStyle = {
     fontSize: '24px',
     textTransform: 'uppercase',
@@ -60,6 +60,11 @@ function Scoreboard({ homeScore, awayScore, time, period }) {
     paddingLeft: '10px',
   };
 
+  const createClickHandler = timestamp => (event) => {
+    player?.seekTo(timestamp)
+    setNextPoint(0)
+  }
+
   return (
     <div style={scoreboardStyle}>
       <div style={{ ...teamStyle, ...homeStyle }}>
@@ -67,8 +72,13 @@ function Scoreboard({ homeScore, awayScore, time, period }) {
         <div style={nameStyle}>Home Team</div>
       </div>
       <div style={{ ...teamStyle, ...timeStyle }}>
-        <div style={scoreStyle}>{time}</div>
-        <div style={nameStyle}>{period}</div>
+        {nextPoint != 0 ? (
+          <button onClick={createClickHandler(nextPoint)} className='button is-primary is-medium' style={{ ...timeStyle }}>Next Point</button>
+
+        ) : (
+          <div style={scoreStyle}>{time}</div>
+
+        )}        <div style={nameStyle}>{period}</div>
       </div>
       <div style={{ ...teamStyle, ...awayStyle }}>
         <div style={{ ...scoreStyle, ...scoreStyleAway }}>{awayScore}</div>

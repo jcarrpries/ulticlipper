@@ -20,6 +20,7 @@ const StatsPanel = (props) => {
 
     events = props.events
     const [currentTime, setCurrentTime] = useState(props.clip ? props.clip.timestamp : -1);
+    const [nextPoint, setNextPoint] = useState(0);
     const [previousTime, setPreviousTime] = useState(props.clip ? props.clip.timestamp : -1);
     const [stats, setStats] = useState({ theirScore: 0, ourScore: 0, theirTurnovers: 0, ourTurnovers: 0, theirOChances: 0, ourOChances: 0, theirHolds: 0, ourHolds: 0, theirBreakChances: 0, ourBreakChances: 0, theirBreaks: 0, ourBreaks: 0, period: "1st" });
 
@@ -40,7 +41,7 @@ const StatsPanel = (props) => {
             let theirBreaks = stats.theirBreaks;
             let period = stats.period;
             let prevTime = previousTime
-            
+
             if (~~props.player?.getCurrentTime() < currentTime) {
                 prevTime = 0;
                 theirScore = 0
@@ -61,16 +62,31 @@ const StatsPanel = (props) => {
             }
 
             setPreviousTime(prevTime)
-            
+
             let currTime = ~~props.player?.getCurrentTime()
             setCurrentTime(currTime);
 
-            events.forEach(event => {
+            events.forEach((event, index) => {
                 if (event.timestamp > prevTime && event.timestamp <= currTime) {
                     if (event.defense && event.event_type === 'GOAL') {
                         theirScore += 1;
                     } else if (!event.defense && event.event_type === 'GOAL') {
                         ourScore += 1;
+                    }
+
+                    if (event.event_type === 'GOAL') {
+                        console.log("1")
+                        const nextEvent = events[index + 1];
+                        console.log("2")
+                        
+                        console.log(nextEvent.timestamp)
+                        if (nextEvent) {
+                            console.log("3")
+                            console.log(nextEvent.timestamp)
+                            setNextPoint(nextEvent.timestamp);
+                        }
+                    } else if ((nextPoint != 0 && event.event_type !== 'GOAL') || nextPoint > currTime) {
+                        setNextPoint(0)
                     }
 
                     if (!event.defense && (event.event_type === 'THROWAWAY' || event.event_type === 'DROP')) {
@@ -122,7 +138,7 @@ const StatsPanel = (props) => {
             setStats({ theirScore, ourScore, theirTurnovers, ourTurnovers, theirOChances, ourOChances, theirHolds, ourHolds, theirBreakChances, ourBreakChances, theirBreaks, ourBreaks, period });
         }, 500);
         return () => clearInterval(interval);
-    }, [props.player, currentTime, previousTime,stats]);
+    }, [props.player, currentTime, previousTime, stats]);
 
     function convertSecondsToTime(seconds) {
         const h = Math.floor(seconds / 3600); // Get the number of hours
@@ -132,7 +148,7 @@ const StatsPanel = (props) => {
     }
 
     return (<>
-        <Scoreboard homeScore={stats.ourScore} awayScore={stats.theirScore} time={convertSecondsToTime(currentTime)} period={stats.period} />
+        <Scoreboard homeScore={stats.ourScore} awayScore={stats.theirScore} time={convertSecondsToTime(currentTime)} period={stats.period} nextPoint={nextPoint} player={props.player} setNextPoint={setNextPoint} />
 
         <hr />
         <div>

@@ -16,7 +16,6 @@ const Timeline = ({ goals, player }) => {
         position: `${(goal.timestamp / gameDuration) * 100}%`
     }));
 
-    //not working
     const createClickHandler = timestamp => (event) => {
         player?.seekTo(timestamp)
     }
