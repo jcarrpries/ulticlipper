@@ -236,7 +236,7 @@ class CommentsByVideo(APIView):
 
     def post(self, request, pk, format=None):
         text = request.data['text']
-        timestamp = int(request.data['timestamp'])
+        timestamp = request.data['timestamp']
         annotation = request.data['annotation']
         video_id = int(request.data['video_id'])
 

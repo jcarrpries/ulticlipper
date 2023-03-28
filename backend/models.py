@@ -74,7 +74,7 @@ class InviteCode(models.Model): # One-time code to invite user to team
 
 class Comment(models.Model):
     text = models.CharField(max_length=280)
-    timestamp = models.IntegerField()
+    timestamp = models.FloatField()
     annotation = models.CharField(max_length=65000)
     video = models.ForeignKey(Video, on_delete=models.CASCADE)
     team = models.ForeignKey(Team, related_name='comments', on_delete=models.CASCADE, null=True)

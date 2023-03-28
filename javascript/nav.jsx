@@ -13,7 +13,7 @@ const Nav = () => {
                 <Link to="/sync" className="navbar-item" id="sync-nav-item">Sync</Link>
                 {/* <Link to="/testimport" className="navbar-item">TestImport</Link> */}
                 <Link to="/search" className="navbar-item" id="search-nav-item">Search</Link>
-                <Link to="/tagsearch" className="navbar-item">TagSearch</Link>
+                {/* <Link to="/tagsearch" className="navbar-item">TagSearch</Link> */}
             </div>
             <ProfileIcon/>
         </div>

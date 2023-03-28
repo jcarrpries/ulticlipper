@@ -121,7 +121,7 @@ const CommentSection = forwardRef((props, canvasRef) => {
     useEffect(() => {
         const interval = setInterval(() => {
             if (player != null) {
-                cur = ~~player.getCurrentTime() // ~~ is shorthand for Math.floor
+                cur =player.getCurrentTime() // ~~ is shorthand for Math.floor
                 setCurTime(cur);
             }
         }, 100);
@@ -224,7 +224,7 @@ const CommentSection = forwardRef((props, canvasRef) => {
                                 {/* <button className="button is-info" onClick={saveAnnotation}>Save</button> */}
                             </>
                         }
-                        <button className="button" onClick={postComment}>Post @ {fmtSeconds(curTime)}</button>
+                        <button className="button" onClick={postComment}>Post @ {fmtSeconds(~~curTime)}</button>
                     </div>
                 </div>
             </div>
@@ -240,7 +240,7 @@ const CommentSection = forwardRef((props, canvasRef) => {
                                     <div className="button is-small"
                                         onClick={() => showComment(comment)}
                                     >
-                                        {fmtSeconds(comment.timestamp) + (comment.annotation ? ' ✏️' : '')}
+                                        {fmtSeconds(~~comment.timestamp) + (comment.annotation ? ' ✏️' : '')}
                                     </div>
                                 </div>
                                 <div className="column">
