@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('backend', '0012_tag_type_tag_value_taggroup_type_alter_tag_name'),
+        ('backend', '0013_alter_comment_timestamp'),
     ]
 
     operations = [
