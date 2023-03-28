@@ -17,13 +17,13 @@ const Timeline = ({ goals, player }) => {
     }));
 
     const createClickHandler = timestamp => (event) => {
-        player?.seekTo(timestamp)
+        player?.seekTo(timestamp-3)
     }
 
     return (
         <>
             <span style={{ color: 'red', fontSize: '24px', fontWeight: 'bold', marginBottom: '100px' }}>Home</span>
-            <div style={{ marginRight: '20px', marginLeft: '60px' , marginTop: '10px'  }}>
+            <div style={{ marginRight: '20px', marginLeft: '80px' , marginTop: '10px'  }}>
                 <div style={{ height: '1px', width: '100%', backgroundColor: 'black' }}></div>
                 <div style={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
                     {goalPositions.map(goal => (
