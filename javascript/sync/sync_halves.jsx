@@ -22,7 +22,10 @@ const SyncHalves = (props) => {
     const handleSelectionChange = () => {
         if (halfSelection == 'first') {
             setHalfSelection('second')
-            player.seekTo(secondHalfTime)
+
+            player.seekTo(halftime+firstHalfTime-clips[0].duration)
+            setSecondHalfTime(halftime+firstHalfTime-clips[0].duration)
+
         } else {
             setHalfSelection('first')
             player.seekTo(firstHalfTime)
@@ -34,16 +37,29 @@ const SyncHalves = (props) => {
     }
 
     const handleContinue = () => {
+        let secondHalfIdx = 0;
         // Modify clips to account for first point and halftime selection.
+        for (let i = 0; i < clips.length; i++) {
+            const clip = clips[i];
+            
+            if (clip.timestamp > halftime+2) {
+                secondHalfIdx = i;
+                break;
+            }
+        }
+        let secondHalfOffset = (secondHalfTime - clips[secondHalfIdx].duration) - clips[secondHalfIdx].timestamp
+
+
         let newClips = []
         clips.forEach((clip) => {
             // Any clip before the original halftime needs to be bumped by firstHalfTime
-            let newTimestamp = clip.timestamp + firstHalfTime
+            let newTimestamp = clip.timestamp + firstHalfTime - clips[0].duration
+
             // Assume any clip after the original halftime needs to be bumped
             // by (new_halftime - original_halftime)
-            let secondHalfOffset = secondHalfTime - halftime
-            if (clip.timestamp - secondHalfOffset > secondHalfTime) {
-                newTimestamp = clip.timestamp - secondHalfOffset
+            if (clip.timestamp > halftime) {
+                newTimestamp = clip.timestamp + secondHalfOffset
+
             }
 
             clip.timestamp = newTimestamp
@@ -72,7 +88,7 @@ const SyncHalves = (props) => {
     return (
         <>
             <div className="block">
-                <p>Select when the {halfSelection} half starts:</p>
+                <p>Select when the first GOAL of the {halfSelection} half is caught:</p>
             </div>
             <div className="block">
                 <YouTube
@@ -83,7 +99,7 @@ const SyncHalves = (props) => {
                         playerVars: {
                             modestBranding: 1,
                             rel: 0,
-                            start: clips[0].timestamp,
+                            start: clips[0].timestamp + clips[0].duration
                         }
                     }}
                 />

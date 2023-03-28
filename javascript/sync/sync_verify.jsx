@@ -95,7 +95,7 @@ const SyncVerify = (props) => {
                             modestBranding: 1,
                             rel: 0,
                             start: clips[clipIdx].timestamp,
-                            end: clips[clipIdx].timestamp + clips[clipIdx].duration
+                            end: clips[clipIdx].timestamp + clips[clipIdx].duration + 3
                         }
                     }}
                 />
