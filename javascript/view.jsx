@@ -249,7 +249,7 @@ const View = () => {
             {loading ? <p style={loadingStyle}>Loading...</p> :
                 <div>
 					<div className="level m-3">
-						{curClipIdx && 
+						{curClipIdx != null && 
 							<div className='level-left'>
 								{curClipIdx > 0 &&
 									<div className='level-item'>
@@ -259,7 +259,7 @@ const View = () => {
 							</div>
 						}
 						<ProgressBar player={player} duration={clip.duration} startTime={clip.timestamp} />
-						{curClipIdx && 
+						{curClipIdx != null && 
 							<div className='level-right'>
 								{curClipIdx < clipIds.length - 1 &&
 									<div className='level-item'>
